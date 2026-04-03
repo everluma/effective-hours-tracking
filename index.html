@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>পারফেক্ট ২৪ ঘন্টা ট্র্যাকার | ডার্ক মোড + জার্নাল + বিস্তারিত সাজেশন</title>
+    <title>সম্পূর্ণ ট্র্যাকার | নামাজ + বিস্তারিত বিশ্লেষণ + বাকি ঘন্টা</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -15,7 +15,6 @@
             transition: background-color 0.3s ease, color 0.2s ease;
         }
 
-        /* ডার্ক মোড ভেরিয়েবল */
         :root {
             --bg-gradient-start: #e0eafc;
             --bg-gradient-end: #cfdef3;
@@ -29,6 +28,7 @@
             --input-bg: white;
             --hour-card-bg: white;
             --hour-header-bg: #f5f0e6;
+            --prayer-bg: #e8f5e9;
         }
 
         body.dark-mode {
@@ -44,6 +44,7 @@
             --input-bg: #2a2a3e;
             --hour-card-bg: #252535;
             --hour-header-bg: #1e1e2e;
+            --prayer-bg: #1a2a1a;
         }
 
         body {
@@ -112,12 +113,18 @@
 
         input[type="date"],
         .goal-input,
-        .dark-mode-toggle {
+        .dark-mode-toggle,
+        .religion-select {
             padding: 8px 16px;
             border-radius: 30px;
             border: none;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        .religion-select {
+            background: #f9a826;
+            color: #0f2b3d;
         }
 
         .goal-input {
@@ -157,6 +164,74 @@
             color: white;
         }
 
+        .prayer-section {
+            background: var(--prayer-bg);
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .prayer-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #f9a826;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .prayer-item {
+            background: var(--hour-card-bg);
+            border-radius: 20px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .prayer-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .prayer-check {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .prayer-check input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .quran-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .quran-input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
         .analytics-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -177,7 +252,6 @@
             border-radius: 28px;
             padding: 12px;
             text-align: center;
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
         }
 
         .stat-card h3 {
@@ -234,10 +308,8 @@
             border-radius: 30px;
             margin: 4px;
             font-size: 0.7rem;
-            color: var(--text-primary);
         }
 
-        /* জার্নাল সেকশন */
         .journal-section {
             background: var(--analytics-bg);
             padding: 20px 28px;
@@ -260,19 +332,6 @@
             color: var(--text-primary);
             font-size: 0.95rem;
             resize: vertical;
-            font-family: inherit;
-        }
-
-        .journal-textarea:focus {
-            outline: none;
-            border-color: #f9a826;
-        }
-
-        .journal-stats {
-            margin-top: 10px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-align: right;
         }
 
         .suggestion-box {
@@ -293,17 +352,16 @@
 
         .suggestion-text {
             font-size: 0.95rem;
-            color: var(--text-primary);
         }
 
-        .improvement-item {
-            background: var(--hour-card-bg);
-            padding: 8px 12px;
-            margin: 8px 0;
-            border-radius: 20px;
+        .remaining-hours-badge {
+            background: #f9a826;
+            color: #0f2b3d;
+            padding: 5px 12px;
+            border-radius: 30px;
             display: inline-block;
-            margin-right: 10px;
-            font-size: 0.85rem;
+            margin-top: 10px;
+            font-weight: bold;
         }
 
         .hours-grid {
@@ -435,6 +493,20 @@
                 </div>
             </div>
 
+            <!-- নামাজ / ইবাদত সেকশন -->
+            <div class="prayer-section" id="prayerSection">
+                <div class="prayer-title">
+                    🕌 ধর্মীয় ইবাদত ট্র্যাকার
+                    <select id="religionSelect" class="religion-select">
+                        <option value="muslim">☪️ মুসলিম</option>
+                        <option value="hindu">🛕 হিন্দু</option>
+                        <option value="christian">⛪ খ্রিস্টান</option>
+                        <option value="other">🔘 অন্যান্য</option>
+                    </select>
+                </div>
+                <div id="prayerContent"></div>
+            </div>
+
             <div class="analytics-row">
                 <div class="stat-cards">
                     <div class="stat-card">
@@ -462,12 +534,11 @@
                 </div>
             </div>
 
-            <!-- জার্নাল সেকশন -->
             <div class="journal-section">
                 <div class="journal-title">📔 দৈনিক জার্নাল / নোট</div>
                 <textarea id="journalInput" class="journal-textarea" rows="3"
-                    placeholder="আজকের দিনটি কেমন গেল? কী শিখলেন? কী সমস্যা হলো? আগামীকালের জন্য পরিকল্পনা..."></textarea>
-                <div class="journal-stats" id="journalStats">0 অক্ষর | শেষ সংরক্ষণ: --</div>
+                    placeholder="আজকের দিনটি কেমন গেল? কী শিখলেন? কী সমস্যা হলো?"></textarea>
+                <div style="font-size:0.7rem; margin-top:8px;" id="journalStats">0 অক্ষর | শেষ সংরক্ষণ: --</div>
             </div>
 
             <div id="suggestionArea" class="suggestion-box">
@@ -476,8 +547,8 @@
             </div>
 
             <div id="hoursContainer" class="hours-grid"></div>
-            <div class="footer-note">✅ রিয়েল টাইম ঘড়ি + গ্রাফ + দৈনিক লক্ষ্য + CSV + জার্নাল + ডার্ক মোড + বিস্তারিত
-                সাজেশন</div>
+            <div class="footer-note">✅ রিয়েল টাইম ঘড়ি + গ্রাফ + লক্ষ্য + CSV + জার্নাল + ডার্ক মোড + ইবাদত ট্র্যাকার +
+                বাকি ঘন্টা দেখাবে</div>
         </div>
     </div>
 
@@ -485,6 +556,7 @@
         const TOTAL_HOURS = 24;
         let currentDate = getTodayString();
         let hourlyData = [];
+        let prayerData = { religion: 'muslim', prayers: {}, quranPage: '', quranJuz: '' };
         let activityChart = null;
 
         const datePicker = document.getElementById('datePicker');
@@ -506,6 +578,8 @@
         const journalInput = document.getElementById('journalInput');
         const journalStats = document.getElementById('journalStats');
         const darkModeToggle = document.getElementById('darkModeToggle');
+        const religionSelect = document.getElementById('religionSelect');
+        const prayerContent = document.getElementById('prayerContent');
 
         function getTodayString() {
             const d = new Date();
@@ -521,13 +595,27 @@
         function createEmptyDataset() {
             return Array(TOTAL_HOURS).fill().map(() => ({ activityText: '', category: 'other', checked: false, topic: '' }));
         }
+
+        function getDefaultPrayerData(religion) {
+            if (religion === 'muslim') {
+                return { prayers: { fajr: false, zuhr: false, asr: false, maghrib: false, isha: false, tahajjud: false }, quranPage: '', quranJuz: '' };
+            } else if (religion === 'hindu') {
+                return { prayers: { puja: false, mantra: false, temple: false, meditation: false }, quranPage: '', quranJuz: '' };
+            } else if (religion === 'christian') {
+                return { prayers: { prayer: false, bible: false, church: false, worship: false }, quranPage: '', quranJuz: '' };
+            }
+            return { prayers: { spiritual: false }, quranPage: '', quranJuz: '' };
+        }
+
         function saveToLocalStorage() {
             localStorage.setItem(`smartTracker_${currentDate}`, JSON.stringify(hourlyData));
             localStorage.setItem(`goal_${currentDate}`, dailyGoalInput.value);
             localStorage.setItem(`journal_${currentDate}`, journalInput.value);
+            localStorage.setItem(`prayer_${currentDate}`, JSON.stringify(prayerData));
             updateAnalyticsAndChart();
             updateJournalStats();
         }
+
         function loadFromLocalStorage(date) {
             const raw = localStorage.getItem(`smartTracker_${date}`);
             if (raw) {
@@ -538,32 +626,134 @@
             }
             return createEmptyDataset();
         }
+
+        function loadPrayerData() {
+            const saved = localStorage.getItem(`prayer_${currentDate}`);
+            if (saved) {
+                try {
+                    prayerData = JSON.parse(saved);
+                    religionSelect.value = prayerData.religion || 'muslim';
+                } catch (e) {
+                    prayerData = { religion: 'muslim', ...getDefaultPrayerData('muslim') };
+                }
+            } else {
+                prayerData = { religion: 'muslim', ...getDefaultPrayerData('muslim') };
+            }
+            renderPrayerSection();
+        }
+
+        function renderPrayerSection() {
+            const religion = religionSelect.value;
+            prayerData.religion = religion;
+            let html = '<div class="prayer-grid">';
+
+            if (religion === 'muslim') {
+                const prayers = [
+                    { id: 'fajr', name: '🌅 ফজর' },
+                    { id: 'zuhr', name: '☀️ যোহর' },
+                    { id: 'asr', name: '🌇 আসর' },
+                    { id: 'maghrib', name: '🌙 মাগরিব' },
+                    { id: 'isha', name: '⭐ ইশা' },
+                    { id: 'tahajjud', name: '🌜 তাহাজ্জুদ' }
+                ];
+                prayers.forEach(p => {
+                    const checked = prayerData.prayers?.[p.id] || false;
+                    html += `
+                    <div class="prayer-item">
+                        <div class="prayer-name">${p.name}</div>
+                        <div class="prayer-check">
+                            <input type="checkbox" id="prayer_${p.id}" ${checked ? 'checked' : ''}>
+                            <label>পড়েছি</label>
+                        </div>
+                    </div>
+                `;
+                });
+                html += `</div><div class="quran-section">
+                <input type="text" id="quranPage" class="quran-input" placeholder="📖 কুরআন পড়া (পৃষ্ঠা নম্বর)" value="${prayerData.quranPage || ''}">
+                <input type="text" id="quranJuz" class="quran-input" placeholder="📚 পারা নম্বর" value="${prayerData.quranJuz || ''}">
+            </div>`;
+            }
+            else if (religion === 'hindu') {
+                const prayers = [
+                    { id: 'puja', name: '🛕 পূজা/অর্চনা' },
+                    { id: 'mantra', name: '🔱 মন্ত্র জপ' },
+                    { id: 'temple', name: '🏛️ মন্দির দর্শন' },
+                    { id: 'meditation', name: '🧘 ধ্যান' }
+                ];
+                prayers.forEach(p => {
+                    const checked = prayerData.prayers?.[p.id] || false;
+                    html += `<div class="prayer-item"><div class="prayer-name">${p.name}</div><div class="prayer-check"><input type="checkbox" id="prayer_${p.id}" ${checked ? 'checked' : ''}><label>করেছি</label></div></div>`;
+                });
+                html += `</div><div class="quran-section"><input type="text" id="quranPage" class="quran-input" placeholder="🕉️ মন্ত্র/স্তোত্র পাঠ" value="${prayerData.quranPage || ''}"></div>`;
+            }
+            else if (religion === 'christian') {
+                const prayers = [
+                    { id: 'prayer', name: '🙏 প্রার্থনা' },
+                    { id: 'bible', name: '📖 বাইবেল পাঠ' },
+                    { id: 'church', name: '⛪ গির্জা যাওয়া' },
+                    { id: 'worship', name: '🎵 উপাসনা' }
+                ];
+                prayers.forEach(p => {
+                    const checked = prayerData.prayers?.[p.id] || false;
+                    html += `<div class="prayer-item"><div class="prayer-name">${p.name}</div><div class="prayer-check"><input type="checkbox" id="prayer_${p.id}" ${checked ? 'checked' : ''}><label>করেছি</label></div></div>`;
+                });
+                html += `</div><div class="quran-section"><input type="text" id="quranPage" class="quran-input" placeholder="📖 বাইবেল অধ্যায়/পদ" value="${prayerData.quranPage || ''}"></div>`;
+            }
+            else {
+                html += `<div class="prayer-item"><div class="prayer-name">🧘 ধ্যান/আধ্যাত্মিক চর্চা</div><div class="prayer-check"><input type="checkbox" id="prayer_spiritual" ${prayerData.prayers?.spiritual ? 'checked' : ''}><label>করেছি</label></div></div>`;
+                html += `</div><div class="quran-section"><input type="text" id="quranPage" class="quran-input" placeholder="আপনার আধ্যাত্মিক চর্চা লিখুন" value="${prayerData.quranPage || ''}"></div>`;
+            }
+
+            prayerContent.innerHTML = html;
+
+            const allPrayerIds = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha', 'tahajjud', 'puja', 'mantra', 'temple', 'meditation', 'prayer', 'bible', 'church', 'worship', 'spiritual'];
+            allPrayerIds.forEach(id => {
+                const chk = document.getElementById(`prayer_${id}`);
+                if (chk) {
+                    chk.addEventListener('change', (e) => {
+                        if (!prayerData.prayers) prayerData.prayers = {};
+                        prayerData.prayers[id] = e.target.checked;
+                        saveToLocalStorage();
+                        updateAnalyticsAndChart();
+                    });
+                }
+            });
+
+            const quranPageInput = document.getElementById('quranPage');
+            const quranJuzInput = document.getElementById('quranJuz');
+            if (quranPageInput) quranPageInput.addEventListener('input', (e) => { prayerData.quranPage = e.target.value; saveToLocalStorage(); });
+            if (quranJuzInput) quranJuzInput.addEventListener('input', (e) => { prayerData.quranJuz = e.target.value; saveToLocalStorage(); });
+        }
+
         function loadGoal() {
             const savedGoal = localStorage.getItem(`goal_${currentDate}`);
             if (savedGoal) dailyGoalInput.value = savedGoal;
         }
+
         function loadJournal() {
             const savedJournal = localStorage.getItem(`journal_${currentDate}`);
             if (savedJournal) journalInput.value = savedJournal;
             updateJournalStats();
         }
+
         function updateJournalStats() {
             const length = journalInput.value.length;
             const lastSave = localStorage.getItem(`journal_lastSave_${currentDate}`) || 'কখনও না';
             journalStats.innerText = `${length} অক্ষর | শেষ সংরক্ষণ: ${lastSave}`;
         }
+
         function setCurrentDate(dateStr) {
             currentDate = dateStr;
             datePicker.value = currentDate;
             hourlyData = loadFromLocalStorage(currentDate);
             loadGoal();
             loadJournal();
+            loadPrayerData();
             renderAllHours();
             updateAnalyticsAndChart();
             highlightCurrentHourCard();
         }
 
-        // ডার্ক মোড টগল
         function initDarkMode() {
             const savedMode = localStorage.getItem('darkMode');
             if (savedMode === 'enabled') {
@@ -614,9 +804,9 @@
                 <div class="activity-form">
                     <input type="text" class="activity-input" placeholder="কি করলেন?" value="${escapeHtml(data.activityText)}">
                     <select class="select-category">
-                        <option value="study" ${data.category === 'study' ? 'selected' : ''}>📚 পড়া / অধ্যয়ন</option>
+                        <option value="study" ${data.category === 'study' ? 'selected' : ''}>📚 পড়া</option>
                         <option value="sleep" ${data.category === 'sleep' ? 'selected' : ''}>😴 ঘুম</option>
-                        <option value="skill" ${data.category === 'skill' ? 'selected' : ''}>💻 স্কিল ডেভেলপমেন্ট</option>
+                        <option value="skill" ${data.category === 'skill' ? 'selected' : ''}>💻 স্কিল</option>
                         <option value="other" ${data.category === 'other' ? 'selected' : ''}>🔘 অন্যান্য</option>
                     </select>
                     <input type="text" class="activity-input" placeholder="বিষয়/স্কিলের নাম" value="${escapeHtml(data.topic)}">
@@ -649,21 +839,14 @@
             let studyTopics = [], skillTopics = [];
             for (let entry of hourlyData) {
                 if (entry.checked) completedCount++;
-                if (entry.category === 'study') {
-                    studyCount++;
-                    if (entry.topic?.trim()) studyTopics.push(entry.topic.trim());
-                    else if (entry.activityText?.trim()) studyTopics.push(entry.activityText.trim().substring(0, 30));
-                }
+                if (entry.category === 'study') { studyCount++; if (entry.topic?.trim()) studyTopics.push(entry.topic.trim()); }
                 else if (entry.category === 'sleep') sleepCount++;
-                else if (entry.category === 'skill') {
-                    skillCount++;
-                    if (entry.topic?.trim()) skillTopics.push(entry.topic.trim());
-                    else if (entry.activityText?.trim()) skillTopics.push(entry.activityText.trim().substring(0, 30));
-                }
+                else if (entry.category === 'skill') { skillCount++; if (entry.topic?.trim()) skillTopics.push(entry.topic.trim()); }
             }
-            const uniqueStudy = [...new Map(studyTopics.map(t => [t.toLowerCase(), t])).values()];
-            const uniqueSkill = [...new Map(skillTopics.map(t => [t.toLowerCase(), t])).values()];
-            return { studyCount, sleepCount, skillCount, completedCount, studyTopicsList: uniqueStudy.slice(0, 5), skillTopicsList: uniqueSkill.slice(0, 5) };
+            let prayerCount = 0;
+            if (prayerData.prayers) prayerCount = Object.values(prayerData.prayers).filter(v => v === true).length;
+            const remainingHours = TOTAL_HOURS - completedCount;
+            return { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, studyTopicsList: studyTopics.slice(0, 5), skillTopicsList: skillTopics.slice(0, 5) };
         }
 
         function updateGoalProgress(studyHours) {
@@ -671,11 +854,9 @@
             const percent = Math.min(100, (studyHours / goal) * 100);
             goalFill.style.width = `${percent}%`;
             goalStatusText.innerText = `অগ্রগতি: ${studyHours}/${goal} ঘন্টা (${Math.round(percent)}%)`;
-            if (goal > 0 && studyHours >= goal) {
-                if (!localStorage.getItem(`goal_celebrated_${currentDate}`)) {
-                    showConfettiMessage("🎉 অভিনন্দন! দৈনিক লক্ষ্য পূরণ করেছেন! 🎉");
-                    localStorage.setItem(`goal_celebrated_${currentDate}`, 'true');
-                }
+            if (goal > 0 && studyHours >= goal && !localStorage.getItem(`goal_celebrated_${currentDate}`)) {
+                showConfettiMessage("🎉 অভিনন্দন! দৈনিক লক্ষ্য পূরণ করেছেন! 🎉");
+                localStorage.setItem(`goal_celebrated_${currentDate}`, 'true');
             }
         }
 
@@ -690,28 +871,55 @@
         }
 
         function generateDetailedSuggestions(analytics) {
-            const { studyCount, sleepCount, skillCount, completedCount, studyTopicsList, skillTopicsList } = analytics;
-            const remaining = 24 - completedCount;
-            let improvementTips = [];
+            const { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, studyTopicsList, skillTopicsList } = analytics;
+            let tips = [];
 
-            if (sleepCount < 6) improvementTips.push(`😴 আপনি মাত্র ${sleepCount} ঘন্টা ঘুমিয়েছেন। প্রাপ্তবয়স্কদের জন্য ৭-৮ ঘন্টা ঘুম জরুরি।`);
-            else if (sleepCount >= 7) improvementTips.push(`😊 ভালো ঘুম (${sleepCount} ঘন্টা) পেয়েছেন। এটি মানসিক স্বাস্থ্যের জন্য ইতিবাচক।`);
+            // বাকি ঘন্টা দেখানো - সবচেয়ে গুরুত্বপূর্ণ
+            tips.push(`⏰ <strong>আজকে এখনও ${remainingHours} ঘন্টা বাকি আছে!</strong> এই সময়টা কাজে লাগানোর পরিকল্পনা করুন।`);
 
-            if (studyCount < 2) improvementTips.push(`📖 পড়ার সময় মাত্র ${studyCount} ঘন্টা। প্রতিদিন কমপক্ষে ২-৩ ঘন্টা পড়ার লক্ষ্য নিন।`);
-            else if (studyCount >= 3 && studyCount < 5) improvementTips.push(`🎯 ভালো! আপনি ${studyCount} ঘন্টা পড়েছেন, ধারাবাহিকতা বজায় রাখুন।`);
-            else if (studyCount >= 5) improvementTips.push(`🏆 অসাধারণ! ${studyCount} ঘন্টা পড়া সত্যিই প্রশংসনীয়।`);
+            // ঘুম সম্পর্কিত সাজেশন
+            if (sleepCount < 6) tips.push(`😴 আপনি মাত্র ${sleepCount} ঘন্টা ঘুমিয়েছেন। প্রাপ্তবয়স্কদের জন্য ৭-৮ ঘন্টা ঘুম জরুরি। আজ রাতে তাড়াতাড়ি ঘুমানোর চেষ্টা করুন।`);
+            else if (sleepCount >= 7) tips.push(`😊 ভালো ঘুম (${sleepCount} ঘন্টা) পেয়েছেন। এটি মানসিক স্বাস্থ্যের জন্য ইতিবাচক।`);
+            else if (sleepCount >= 6 && sleepCount < 7) tips.push(`😐 ঘুম ${sleepCount} ঘন্টা, আরও ১ ঘন্টা ঘুমালে ভালো থাকবেন।`);
 
-            if (skillCount < 1) improvementTips.push(`⚙️ আজ স্কিল ডেভেলপমেন্টে সময় দেননি। ১ ঘন্টা নতুন কিছু শিখুন।`);
-            else if (skillCount >= 2) improvementTips.push(`🔥 চমৎকার! স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন।`);
+            // পড়া সম্পর্কিত সাজেশন
+            if (studyCount < 2) tips.push(`📖 পড়ার সময় মাত্র ${studyCount} ঘন্টা। প্রতিদিন কমপক্ষে ২-৩ ঘন্টা পড়ার লক্ষ্য নিন।`);
+            else if (studyCount >= 3 && studyCount < 5) tips.push(`🎯 ভালো! আপনি ${studyCount} ঘন্টা পড়েছেন, ধারাবাহিকতা বজায় রাখুন।`);
+            else if (studyCount >= 5) tips.push(`🏆 অসাধারণ! ${studyCount} ঘন্টা পড়া সত্যিই প্রশংসনীয়।`);
 
-            if (remaining > 12) improvementTips.push(`⏳ এখনও ${remaining} ঘন্টা বাকি। পরিকল্পনা করুন।`);
+            // স্কিল ডেভেলপমেন্ট
+            if (skillCount < 1) tips.push(`⚙️ আজ স্কিল ডেভেলপমেন্টে সময় দেননি। ১ ঘন্টা নতুন কিছু শিখুন (কোডিং, ভাষা, ডিজাইন) ভবিষ্যতের জন্য বড় সুবিধা।`);
+            else if (skillCount >= 1 && skillCount < 2) tips.push(`💪 স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন, ভালো। আরও বাড়ান।`);
+            else if (skillCount >= 2) tips.push(`🔥 চমৎকার! স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন। এটাই সাফল্যের চাবি!`);
 
-            if (studyTopicsList.length > 0) improvementTips.push(`📚 পড়া বিষয়: ${studyTopicsList.join(', ')}`);
-            if (skillTopicsList.length > 0) improvementTips.push(`🎓 স্কিল টপিক: ${skillTopicsList.join(', ')}`);
+            // ইবাদত সম্পর্কিত সাজেশন
+            if (prayerCount > 0 && prayerCount < 3) tips.push(`🕌 ইবাদত ${prayerCount} বার করেছেন। নিয়মিত করার চেষ্টা করুন।`);
+            else if (prayerCount >= 5) tips.push(`🌟 চমৎকার! ইবাদতে ধারাবাহিকতা বজায় রাখুন।`);
 
-            if (completedCount === 24) improvementTips.push(`🎉 অসাধারণ! সম্পূর্ণ দিন ট্র্যাক করেছেন!`);
+            // টপিক ভিত্তিক সাজেশন
+            if (studyTopicsList.length > 0) tips.push(`📚 আপনি পড়েছেন: ${studyTopicsList.join(', ')}। এই বিষয়গুলো নিয়মিত পড়তে থাকুন।`);
+            if (skillTopicsList.length > 0) tips.push(`🎓 স্কিল ডেভেলপ করছেন: ${skillTopicsList.join(', ')}। এই স্কিলগুলো ভবিষ্যতে কাজে দেবে।`);
 
-            return improvementTips.length ? improvementTips.map(tip => `• ${tip}`).join('<br>') : "👍 চমৎকার! সময় ব্যবস্থাপনা ভালো।";
+            // সময় ব্যবস্থাপনা
+            if (remainingHours > 12) {
+                tips.push(`📋 এখনও অনেক সময় বাকি! আগামী ঘন্টাগুলোর জন্য পড়া এবং স্কিল ডেভেলপমেন্টে ফোকাস করুন।`);
+            } else if (remainingHours > 6 && remainingHours <= 12) {
+                tips.push(`📋 বাকি ${remainingHours} ঘন্টা। এই সময়ে পড়া এবং স্কিল ডেভেলপমেন্টে ফোকাস করুন।`);
+            }
+
+            // মোটিভেশনাল
+            if (completedCount === 24) {
+                tips.push(`🎉 অসাধারণ! সম্পূর্ণ দিন ট্র্যাক করেছেন। প্রতিদিন এই ধারাবাহিকতা আনুন।`);
+            }
+
+            const productiveTotal = studyCount + skillCount;
+            if (productiveTotal > 0 && productiveTotal < 4) {
+                tips.push(`🌟 পরামর্শ: উৎপাদনশীল সময় বাড়ান। ছোট ছোট লক্ষ্য নিন।`);
+            } else if (productiveTotal >= 8) {
+                tips.push(`🏅 গুরুত্বপূর্ণ: আপনি আজ খুবই উৎপাদনশীল ছিলেন! এই ধারা বজায় রাখুন।`);
+            }
+
+            return tips.map(tip => `• ${tip}`).join('<br>');
         }
 
         function updateAnalyticsAndChart() {
@@ -752,26 +960,29 @@
         function resetCurrentDate() {
             if (confirm(`"${currentDate}" তারিখের সব রেকর্ড রিসেট করবেন?`)) {
                 hourlyData = createEmptyDataset();
+                prayerData = { religion: religionSelect.value, ...getDefaultPrayerData(religionSelect.value) };
                 journalInput.value = '';
                 saveToLocalStorage();
                 renderAllHours();
+                renderPrayerSection();
                 updateAnalyticsAndChart();
                 showConfettiMessage("🗑️ ডাটা রিসেট হয়েছে");
             }
         }
 
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function (m) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m];
-            });
-        }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 
         journalInput.addEventListener('input', () => {
             const now = new Date().toLocaleTimeString();
             localStorage.setItem(`journal_${currentDate}`, journalInput.value);
             localStorage.setItem(`journal_lastSave_${currentDate}`, now);
             updateJournalStats();
+        });
+
+        religionSelect.addEventListener('change', () => {
+            prayerData = { religion: religionSelect.value, ...getDefaultPrayerData(religionSelect.value) };
+            renderPrayerSection();
+            saveToLocalStorage();
         });
 
         datePicker.addEventListener('change', (e) => setCurrentDate(e.target.value));
@@ -786,6 +997,7 @@
             hourlyData = loadFromLocalStorage(currentDate);
             loadGoal();
             loadJournal();
+            loadPrayerData();
             renderAllHours();
             updateAnalyticsAndChart();
             startRealTimeClock();
