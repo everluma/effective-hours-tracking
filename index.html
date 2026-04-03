@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>বুদ্ধিদীপ্ত ২৪ ঘন্টা ট্র্যাকার | পড়া, ঘুম, স্কিল ডেভেলপমেন্ট ও সাজেশন</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans Bengali', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* main card */
+        .tracker-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .header {
+            background: #0f2b3d;
+            padding: 20px 28px;
+            color: white;
+            border-bottom: 4px solid #f9a826;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .header h1 small {
+            font-size: 0.9rem;
+            background: #f9a826;
+            padding: 5px 12px;
+            border-radius: 40px;
+            color: #0f2b3d;
+        }
+
+        .date-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            gap: 15px;
+        }
+
+        .date-controls {
+            display: flex;
+            gap: 12px;
+            background: #1e4057;
+            padding: 6px 20px;
+            border-radius: 60px;
+            flex-wrap: wrap;
+        }
+
+        input[type="date"] {
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: none;
+            font-weight: bold;
+        }
+
+        .today-btn {
+            background: #f9a826;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* summary analytics */
+        .analytics-panel {
+            background: #fef5e7;
+            padding: 20px 28px;
+            border-bottom: 1px solid #f0e2ce;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 28px;
+            padding: 12px 18px;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #4a5b6e;
+            margin-bottom: 6px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f4e6e;
+        }
+
+        .topic-badge {
+            background: #e9ecef;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            margin: 4px;
+            font-size: 0.75rem;
+        }
+
+        .suggestion-box {
+            background: #d9e6f5;
+            border-left: 6px solid #f9a826;
+            padding: 14px 20px;
+            border-radius: 28px;
+            margin-top: 12px;
+        }
+
+        .hours-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 14px;
+            padding: 28px;
+            background: #fefcf8;
+        }
+
+        .hour-card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f0e2cf;
+            overflow: hidden;
+            transition: 0.1s;
+        }
+
+        .hour-header {
+            background: #f5f0e6;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            border-bottom: 1px solid #e6d9c6;
+        }
+
+        .hour-label {
+            background: #ffffffcc;
+            padding: 3px 12px;
+            border-radius: 40px;
+        }
+
+        .activity-form {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .activity-input {
+            border: 1px solid #ddd0bc;
+            border-radius: 60px;
+            padding: 10px 16px;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+
+        .select-category {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 60px;
+            background: #fef8f0;
+            border: 1px solid #ddd0bc;
+            font-weight: 500;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+
+        .footer-note {
+            background: #e9e2d4;
+            text-align: center;
+            padding: 14px;
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 700px) {
+            .hours-grid {
+                padding: 16px;
+            }
+        }
+
+        button {
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .reset-btn {
+            background: #a03e2c;
+            color: white;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <div class="tracker-card">
+            <div class="header">
+                <h1>📊 ২৪ ঘণ্টার স্মার্ট চেকলিস্ট <small>পড়া · ঘুম · স্কিল ডেভেলপমেন্ট</small></h1>
+                <div class="date-bar">
+                    <div class="date-controls">
+                        <label>📅 তারিখ:</label>
+                        <input type="date" id="datePicker">
+                        <button id="todayBtn" class="today-btn">আজ</button>
+                    </div>
+                    <button id="resetDateBtn" class="reset-btn">🗑️ আজকের ডাটা রিসেট</button>
+                </div>
+            </div>
+
+            <!-- উন্নত অ্যানালাইসিস প্যানেল -->
+            <div class="analytics-panel" id="analyticsPanel">
+                <div class="stat-card">
+                    <h3>📖 মোট পড়ার ঘন্টা</h3>
+                    <div class="stat-number" id="studyHours">0</div>
+                    <div id="studyTopicsList" style="font-size:12px"></div>
+                </div>
+                <div class="stat-card">
+                    <h3>😴 মোট ঘুমের ঘন্টা</h3>
+                    <div class="stat-number" id="sleepHours">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>⚙️ স্কিল ডেভেলপমেন্ট</h3>
+                    <div class="stat-number" id="skillHours">0</div>
+                    <div id="skillTopicsList" style="font-size:12px"></div>
+                </div>
+                <div class="stat-card">
+                    <h3>✅ সম্পন্ন ঘন্টা</h3>
+                    <div class="stat-number" id="completedHours">0</div>
+                    <div>মোট ২৪ ঘন্টা</div>
+                </div>
+            </div>
+
+            <!-- সাজেশন ও উন্নতির ক্ষেত্র -->
+            <div id="suggestionArea" class="suggestion-box" style="margin: 0 28px 20px 28px;">
+                💡 লোড হচ্ছে বিশ্লেষণ...
+            </div>
+
+            <div id="hoursContainer" class="hours-grid">
+                <!-- dynamic cards -->
+            </div>
+            <div class="footer-note">
+                ✅ প্রতি ঘন্টায় আপনি কি করেছেন সিলেক্ট করুন (পড়া/ঘুম/স্কিল/অন্যান্য), টপিক লিখুন। স্বয়ংক্রিয় সংরক্ষণ।
+                বিশ্লেষণ ও উন্নতির পরামর্শ দেখাবে।
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---------- কনফিগারেশন ----------
+        const TOTAL_HOURS = 24;
+        let currentDate = getTodayString();
+        let hourlyData = []; // { activityText, category, checked, topicKeywords }
+
+        // DOM elements
+        const datePicker = document.getElementById('datePicker');
+        const todayBtn = document.getElementById('todayBtn');
+        const resetDateBtn = document.getElementById('resetDateBtn');
+        const hoursContainer = document.getElementById('hoursContainer');
+        const studyHoursSpan = document.getElementById('studyHours');
+        const sleepHoursSpan = document.getElementById('sleepHours');
+        const skillHoursSpan = document.getElementById('skillHours');
+        const completedHoursSpan = document.getElementById('completedHours');
+        const studyTopicsListDiv = document.getElementById('studyTopicsList');
+        const skillTopicsListDiv = document.getElementById('skillTopicsList');
+        const suggestionArea = document.getElementById('suggestionArea');
+
+        // helpers
+        function getTodayString() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatHour(hour24) {
+            let period = hour24 >= 12 ? 'PM' : 'AM';
+            let hour12 = hour24 % 12;
+            if (hour12 === 0) hour12 = 12;
+            return `${hour12}${period} (${hour24}:00)`;
+        }
+
+        // create empty dataset
+        function createEmptyDataset() {
+            return Array(TOTAL_HOURS).fill().map(() => ({
+                activityText: '',
+                category: 'other',     // 'study', 'sleep', 'skill', 'other'
+                checked: false,
+                topic: ''              // specific topic name (যে বিষয় পড়লাম / কোন স্কিল)
+            }));
+        }
+
+        // save to localStorage (per date)
+        function saveToLocalStorage() {
+            const key = `smartTracker_${currentDate}`;
+            localStorage.setItem(key, JSON.stringify(hourlyData));
+            updateAnalyticsAndSuggestions();
+        }
+
+        function loadFromLocalStorage(date) {
+            const key = `smartTracker_${date}`;
+            const raw = localStorage.getItem(key);
+            if (raw) {
+                try {
+                    let parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length === TOTAL_HOURS) {
+                        return parsed.map(item => ({
+                            activityText: item.activityText || '',
+                            category: item.category || 'other',
+                            checked: item.checked === true,
+                            topic: item.topic || ''
+                        }));
+                    }
+                } catch (e) { }
+            }
+            return createEmptyDataset();
+        }
+
+        // switch date
+        function setCurrentDate(dateStr) {
+            currentDate = dateStr;
+            datePicker.value = currentDate;
+            hourlyData = loadFromLocalStorage(currentDate);
+            renderAllHours();
+            updateAnalyticsAndSuggestions();
+        }
+
+        // রেন্ডার ২৪টি কার্ড
+        function renderAllHours() {
+            if (!hoursContainer) return;
+            hoursContainer.innerHTML = '';
+            for (let i = 0; i < TOTAL_HOURS; i++) {
+                const data = hourlyData[i];
+                const card = document.createElement('div');
+                card.className = 'hour-card';
+                card.dataset.index = i;
+
+                // header
+                const header = document.createElement('div');
+                header.className = 'hour-header';
+                const hourLabel = document.createElement('div');
+                hourLabel.className = 'hour-label';
+                hourLabel.innerText = formatHour(i);
+                const checkStatusSpan = document.createElement('div');
+                checkStatusSpan.innerText = data.checked ? '✅ সমাপ্ত' : '⏳ বাকি';
+                checkStatusSpan.style.fontSize = '0.7rem';
+                header.appendChild(hourLabel);
+                header.appendChild(checkStatusSpan);
+
+                // form body
+                const formDiv = document.createElement('div');
+                formDiv.className = 'activity-form';
+
+                // activity text input
+                const actInput = document.createElement('input');
+                actInput.type = 'text';
+                actInput.placeholder = 'কি করলেন? (যেমন: গণিত অনুশীলন, Node.js শেখা)';
+                actInput.value = data.activityText;
+                actInput.className = 'activity-input';
+
+                // category select
+                const catSelect = document.createElement('select');
+                catSelect.className = 'select-category';
+                const categories = [
+                    { value: 'study', label: '📚 পড়া / অধ্যয়ন' },
+                    { value: 'sleep', label: '😴 ঘুম' },
+                    { value: 'skill', label: '💻 স্কিল ডেভেলপমেন্ট' },
+                    { value: 'other', label: '🔘 অন্যান্য' }
+                ];
+                categories.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.value;
+                    opt.innerText = cat.label;
+                    if (data.category === cat.value) opt.selected = true;
+                    catSelect.appendChild(opt);
+                });
+
+                // topic input (বিষয় বা স্কিলের নাম)
+                const topicInput = document.createElement('input');
+                topicInput.type = 'text';
+                topicInput.placeholder = 'বিষয়/স্কিলের নাম (যেমন: অ্যালগরিদম, রিয়্যাক্ট, ইংরেজি ব্যাকরণ)';
+                topicInput.value = data.topic;
+                topicInput.className = 'activity-input';
+
+                // checkbox row
+                const checkRow = document.createElement('div');
+                checkRow.className = 'checkbox-row';
+                const chk = document.createElement('input');
+                chk.type = 'checkbox';
+                chk.checked = data.checked;
+                const chkLabel = document.createElement('label');
+                chkLabel.innerText = 'এই ঘন্টা সম্পন্ন হয়েছে';
+                checkRow.appendChild(chk);
+                checkRow.appendChild(chkLabel);
+
+                formDiv.appendChild(actInput);
+                formDiv.appendChild(catSelect);
+                formDiv.appendChild(topicInput);
+                formDiv.appendChild(checkRow);
+                card.appendChild(header);
+                card.appendChild(formDiv);
+
+                // event listeners
+                actInput.addEventListener('input', (e) => { hourlyData[i].activityText = e.target.value; saveToLocalStorage(); updateSingleCardStatus(card, hourlyData[i]); });
+                catSelect.addEventListener('change', (e) => { hourlyData[i].category = e.target.value; saveToLocalStorage(); updateAnalyticsAndSuggestions(); });
+                topicInput.addEventListener('input', (e) => { hourlyData[i].topic = e.target.value; saveToLocalStorage(); updateAnalyticsAndSuggestions(); });
+                chk.addEventListener('change', (e) => { hourlyData[i].checked = e.target.checked; updateSingleCardStatus(card, hourlyData[i]); saveToLocalStorage(); });
+
+                hoursContainer.appendChild(card);
+            }
+        }
+
+        function updateSingleCardStatus(card, data) {
+            const headerDiv = card.querySelector('.hour-header');
+            if (headerDiv) {
+                let statusSpan = headerDiv.querySelector('div:last-child');
+                if (statusSpan) statusSpan.innerText = data.checked ? '✅ সমাপ্ত' : '⏳ বাকি';
+            }
+        }
+
+        // বিশ্লেষণ: পড়া, ঘুম, স্কিলের মোট ঘন্টা এবং টপিক সংগ্রহ
+        function computeAnalytics() {
+            let studyCount = 0, sleepCount = 0, skillCount = 0, completedCount = 0;
+            let studyTopics = [];
+            let skillTopics = [];
+
+            for (let entry of hourlyData) {
+                if (entry.checked) completedCount++;
+                if (entry.category === 'study') {
+                    studyCount++;
+                    if (entry.topic && entry.topic.trim() !== '') studyTopics.push(entry.topic.trim());
+                    else if (entry.activityText && entry.activityText.trim() !== '') studyTopics.push(entry.activityText.trim().substring(0, 30));
+                }
+                else if (entry.category === 'sleep') sleepCount++;
+                else if (entry.category === 'skill') {
+                    skillCount++;
+                    if (entry.topic && entry.topic.trim() !== '') skillTopics.push(entry.topic.trim());
+                    else if (entry.activityText && entry.activityText.trim() !== '') skillTopics.push(entry.activityText.trim().substring(0, 30));
+                }
+            }
+
+            // unique topics frequency
+            const uniqueStudy = [...new Map(studyTopics.map(t => [t.toLowerCase(), t])).values()];
+            const uniqueSkill = [...new Map(skillTopics.map(t => [t.toLowerCase(), t])).values()];
+
+            return { studyCount, sleepCount, skillCount, completedCount, studyTopicsList: uniqueStudy.slice(0, 5), skillTopicsList: uniqueSkill.slice(0, 5) };
+        }
+
+        // উন্নতির সাজেশন জেনারেট করুন
+        function generateSuggestions(analytics) {
+            const { studyCount, sleepCount, skillCount, completedCount, studyTopicsList, skillTopicsList } = analytics;
+            const remaining = 24 - completedCount;
+            let suggestionText = "";
+            let improvementTips = [];
+
+            // স্বাস্থ্যকর ঘুম বিশ্লেষণ
+            if (sleepCount < 6) improvementTips.push(`😴 আপনি মাত্র ${sleepCount} ঘন্টা ঘুমিয়েছেন। প্রাপ্তবয়স্কদের জন্য ৭-৮ ঘন্টা ঘুম জরুরি। আজ রাতে তাড়াতাড়ি ঘুমানোর চেষ্টা করুন।`);
+            else if (sleepCount >= 7) improvementTips.push(`😊 ভালো ঘুম (${sleepCount} ঘন্টা) পেয়েছেন। এটি মানসিক স্বাস্থ্যের জন্য ইতিবাচক।`);
+
+            // পড়ার অভ্যাস
+            if (studyCount < 2) improvementTips.push(`📖 পড়ার সময় মাত্র ${studyCount} ঘন্টা। প্রতিদিন কমপক্ষে ২ ঘন্টা পড়ার লক্ষ্য নিন।`);
+            else if (studyCount >= 3) improvementTips.push(`🎯 চমৎকার! আপনি ${studyCount} ঘন্টা পড়েছেন, ধারাবাহিকতা বজায় রাখুন।`);
+
+            // স্কিল ডেভেলপমেন্ট
+            if (skillCount < 1) improvementTips.push(`⚙️ আজ স্কিল ডেভেলপমেন্টে সময় দেননি। ১ ঘন্টা নতুন কিছু শিখুন (কোডিং, ভাষা, ডিজাইন) ভবিষ্যতের জন্য বড় সুবিধা।`);
+            else if (skillCount >= 2) improvementTips.push(`💪 স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন, দারুণ! ${skillTopicsList.length > 0 ? `আপনি শিখছেন: ${skillTopicsList.join(', ')}` : ''}`);
+
+            // টপিক ও উন্নতি
+            if (studyTopicsList.length > 0) suggestionText += `📚 পড়া বিষয়: ${studyTopicsList.join(', ')}. `;
+            if (skillTopicsList.length > 0) suggestionText += `🎓 স্কিল টপিক: ${skillTopicsList.join(', ')}. `;
+
+            if (remaining > 12) improvementTips.push(`⏳ এখনও ${remaining} ঘন্টা বাকি আছে অনির্ধারিত। আগামী ঘন্টাগুলোর জন্য পরিকল্পনা করুন (পড়া/স্কিল নির্ধারণ করুন)।`);
+
+            if (completedCount === 24) improvementTips.push(`🎉 অসাধারণ! সম্পূর্ণ দিন ট্র্যাক করেছেন। প্রতিদিন এই ধারাবাহিকতা আনুন।`);
+
+            let finalSuggestion = suggestionText + " উন্নতির পরামর্শ: " + improvementTips.join(" · ");
+            if (improvementTips.length === 0) finalSuggestion = "👍 চালিয়ে যান! আপনার সময় ব্যবস্থাপনা ভালো, আরও পড়া ও স্কিলে ফোকাস করতে পারেন।";
+
+            return finalSuggestion;
+        }
+
+        function updateAnalyticsAndSuggestions() {
+            const analytics = computeAnalytics();
+            studyHoursSpan.innerText = analytics.studyCount;
+            sleepHoursSpan.innerText = analytics.sleepCount;
+            skillHoursSpan.innerText = analytics.skillCount;
+            completedHoursSpan.innerText = analytics.completedCount;
+
+            // টপিক লিস্ট দেখানো
+            if (analytics.studyTopicsList.length === 0) studyTopicsListDiv.innerHTML = '<span style="font-size:11px;">কোনো বিষয় যোগ করেনি</span>';
+            else studyTopicsListDiv.innerHTML = analytics.studyTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('');
+
+            if (analytics.skillTopicsList.length === 0) skillTopicsListDiv.innerHTML = '<span style="font-size:11px;">কোনো স্কিল টপিক নেই</span>';
+            else skillTopicsListDiv.innerHTML = analytics.skillTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('');
+
+            const suggestion = generateSuggestions(analytics);
+            suggestionArea.innerHTML = `💡 <strong>বিশ্লেষণ ও সাজেশন:</strong> ${suggestion}`;
+
+            // অতিরিক্ত: কোন কোন ঘন্টায় পড়া/স্কিল বেশি সেটাও দেখাতে পারে, কিন্তু মূল সাজেশন যথেষ্ট
+        }
+
+        function escapeHtml(str) { return str.replace(/[&<>]/g, function (m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+
+        // রিসেট বর্তমান তারিখের ডাটা
+        function resetCurrentDate() {
+            if (confirm(`"${currentDate}" তারিখের সব রেকর্ড মুছে ফেলতে চান? (পড়া, ঘুম, স্কিল সহ সব রিসেট হবে)`)) {
+                hourlyData = createEmptyDataset();
+                saveToLocalStorage();
+                renderAllHours();
+                updateAnalyticsAndSuggestions();
+            }
+        }
+
+        // event listeners
+        datePicker.addEventListener('change', (e) => setCurrentDate(e.target.value));
+        todayBtn.addEventListener('click', () => setCurrentDate(getTodayString()));
+        resetDateBtn.addEventListener('click', resetCurrentDate);
+
+        // init
+        function init() {
+            currentDate = getTodayString();
+            datePicker.value = currentDate;
+            hourlyData = loadFromLocalStorage(currentDate);
+            renderAllHours();
+            updateAnalyticsAndSuggestions();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
