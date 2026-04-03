@@ -4,29 +4,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>বুদ্ধিদীপ্ত ২৪ ঘন্টা ট্র্যাকার | পড়া, ঘুম, স্কিল ডেভেলপমেন্ট ও সাজেশন</title>
+    <title>পারফেক্ট ২৪ ঘন্টা ট্র্যাকার | ডার্ক মোড + জার্নাল + বিস্তারিত সাজেশন</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', 'Roboto', 'Noto Sans Bengali', system-ui, sans-serif;
+            transition: background-color 0.3s ease, color 0.2s ease;
+        }
+
+        /* ডার্ক মোড ভেরিয়েবল */
+        :root {
+            --bg-gradient-start: #e0eafc;
+            --bg-gradient-end: #cfdef3;
+            --card-bg: rgba(255, 255, 255, 0.97);
+            --header-bg: #0f2b3d;
+            --text-primary: #1f2b3d;
+            --text-secondary: #4a5b6e;
+            --border-color: #f0e2cf;
+            --analytics-bg: #fef5e7;
+            --suggestion-bg: #d9e6f5;
+            --input-bg: white;
+            --hour-card-bg: white;
+            --hour-header-bg: #f5f0e6;
+        }
+
+        body.dark-mode {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --card-bg: rgba(30, 30, 46, 0.97);
+            --header-bg: #0f0f1a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0b0;
+            --border-color: #2a2a3e;
+            --analytics-bg: #1e1e2e;
+            --suggestion-bg: #1a1a2e;
+            --input-bg: #2a2a3e;
+            --hour-card-bg: #252535;
+            --hour-header-bg: #1e1e2e;
         }
 
         body {
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             padding: 20px;
             min-height: 100vh;
+            color: var(--text-primary);
         }
 
         .dashboard {
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
         }
 
-        /* main card */
         .tracker-card {
-            background: rgba(255, 255, 255, 0.97);
+            background: var(--card-bg);
             border-radius: 2rem;
             box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.3);
             overflow: hidden;
@@ -34,7 +67,7 @@
         }
 
         .header {
-            background: #0f2b3d;
+            background: var(--header-bg);
             padding: 20px 28px;
             color: white;
             border-bottom: 4px solid #f9a826;
@@ -46,14 +79,17 @@
             flex-wrap: wrap;
             gap: 12px;
             align-items: center;
+            justify-content: space-between;
         }
 
-        .header h1 small {
-            font-size: 0.9rem;
-            background: #f9a826;
-            padding: 5px 12px;
-            border-radius: 40px;
-            color: #0f2b3d;
+        .live-clock {
+            background: #00000066;
+            backdrop-filter: blur(8px);
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
         }
 
         .date-bar {
@@ -74,15 +110,32 @@
             flex-wrap: wrap;
         }
 
-        input[type="date"] {
+        input[type="date"],
+        .goal-input,
+        .dark-mode-toggle {
             padding: 8px 16px;
             border-radius: 30px;
             border: none;
             font-weight: bold;
+            cursor: pointer;
         }
 
-        .today-btn {
+        .goal-input {
+            width: 100px;
+            text-align: center;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .dark-mode-toggle {
             background: #f9a826;
+            color: #0f2b3d;
+            margin-left: 5px;
+        }
+
+        .today-btn,
+        .reset-btn,
+        .export-btn {
             border: none;
             padding: 6px 18px;
             border-radius: 30px;
@@ -90,51 +143,167 @@
             cursor: pointer;
         }
 
-        /* summary analytics */
-        .analytics-panel {
-            background: #fef5e7;
-            padding: 20px 28px;
-            border-bottom: 1px solid #f0e2ce;
+        .today-btn {
+            background: #f9a826;
+        }
+
+        .reset-btn {
+            background: #a03e2c;
+            color: white;
+        }
+
+        .export-btn {
+            background: #2c7a4d;
+            color: white;
+        }
+
+        .analytics-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 18px;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px 28px;
+            background: var(--analytics-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
 
         .stat-card {
-            background: white;
+            background: var(--hour-card-bg);
             border-radius: 28px;
-            padding: 12px 18px;
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+            padding: 12px;
             text-align: center;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
         }
 
         .stat-card h3 {
-            font-size: 0.9rem;
-            color: #4a5b6e;
-            margin-bottom: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            color: #1f4e6e;
+            color: #f9a826;
+        }
+
+        .goal-section {
+            background: var(--hour-card-bg);
+            border-radius: 28px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .goal-progress {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .goal-fill {
+            height: 100%;
+            background: #f9a826;
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        .chart-container {
+            background: var(--hour-card-bg);
+            border-radius: 28px;
+            padding: 12px;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        canvas {
+            max-height: 200px;
+            width: 100%;
         }
 
         .topic-badge {
-            background: #e9ecef;
+            background: #f9a82620;
             display: inline-block;
             padding: 4px 12px;
             border-radius: 30px;
             margin: 4px;
+            font-size: 0.7rem;
+            color: var(--text-primary);
+        }
+
+        /* জার্নাল সেকশন */
+        .journal-section {
+            background: var(--analytics-bg);
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .journal-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #f9a826;
+        }
+
+        .journal-textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .journal-textarea:focus {
+            outline: none;
+            border-color: #f9a826;
+        }
+
+        .journal-stats {
+            margin-top: 10px;
             font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: right;
         }
 
         .suggestion-box {
-            background: #d9e6f5;
+            background: var(--suggestion-bg);
             border-left: 6px solid #f9a826;
-            padding: 14px 20px;
+            padding: 18px 24px;
             border-radius: 28px;
-            margin-top: 12px;
+            margin: 0 28px 20px 28px;
+            line-height: 1.6;
+        }
+
+        .suggestion-title {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #f9a826;
+        }
+
+        .suggestion-text {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .improvement-item {
+            background: var(--hour-card-bg);
+            padding: 8px 12px;
+            margin: 8px 0;
+            border-radius: 20px;
+            display: inline-block;
+            margin-right: 10px;
+            font-size: 0.85rem;
         }
 
         .hours-grid {
@@ -142,31 +311,28 @@
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 14px;
             padding: 28px;
-            background: #fefcf8;
+            background: var(--card-bg);
         }
 
         .hour-card {
-            background: white;
+            background: var(--hour-card-bg);
             border-radius: 28px;
             box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
-            border: 1px solid #f0e2cf;
+            border: 1px solid var(--border-color);
             overflow: hidden;
-            transition: 0.1s;
+        }
+
+        .hour-card.current-hour-highlight {
+            border: 3px solid #f9a826;
+            background: var(--suggestion-bg);
         }
 
         .hour-header {
-            background: #f5f0e6;
+            background: var(--hour-header-bg);
             padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             font-weight: bold;
-            border-bottom: 1px solid #e6d9c6;
-        }
-
-        .hour-label {
-            background: #ffffffcc;
-            padding: 3px 12px;
-            border-radius: 40px;
         }
 
         .activity-form {
@@ -176,21 +342,14 @@
             gap: 12px;
         }
 
-        .activity-input {
-            border: 1px solid #ddd0bc;
+        .activity-input,
+        .select-category {
+            border: 1px solid var(--border-color);
             border-radius: 60px;
             padding: 10px 16px;
             width: 100%;
-            font-size: 0.85rem;
-        }
-
-        .select-category {
-            width: 100%;
-            padding: 8px 12px;
-            border-radius: 60px;
-            background: #fef8f0;
-            border: 1px solid #ddd0bc;
-            font-weight: 500;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
 
         .checkbox-row {
@@ -201,29 +360,46 @@
         }
 
         .footer-note {
-            background: #e9e2d4;
+            background: var(--hour-header-bg);
             text-align: center;
             padding: 14px;
             font-size: 0.7rem;
         }
 
-        @media (max-width: 700px) {
-            .hours-grid {
-                padding: 16px;
+        .confetti-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #f9a826;
+            color: #0f2b3d;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            animation: fadeOut 3s forwards;
+            z-index: 1000;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            70% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-20px);
+                visibility: hidden;
             }
         }
 
-        button {
-            cursor: pointer;
-            transition: 0.1s;
-        }
-
-        .reset-btn {
-            background: #a03e2c;
-            color: white;
-            border: none;
-            padding: 6px 18px;
-            border-radius: 30px;
+        @media (max-width: 800px) {
+            .analytics-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -232,65 +408,89 @@
     <div class="dashboard">
         <div class="tracker-card">
             <div class="header">
-                <h1>📊 ২৪ ঘণ্টার স্মার্ট চেকলিস্ট <small>পড়া · ঘুম · স্কিল ডেভেলপমেন্ট</small></h1>
+                <h1>
+                    📊 ২৪ ঘণ্টার স্মার্ট ট্র্যাকার
+                    <div style="display: flex; gap: 10px;">
+                        <span class="live-clock" id="liveClock">--:--:--</span>
+                        <button class="dark-mode-toggle" id="darkModeToggle">🌙 ডার্ক মোড</button>
+                    </div>
+                </h1>
                 <div class="date-bar">
                     <div class="date-controls">
                         <label>📅 তারিখ:</label>
                         <input type="date" id="datePicker">
                         <button id="todayBtn" class="today-btn">আজ</button>
+                        <button id="resetDateBtn" class="reset-btn">🗑️ রিসেট</button>
+                        <button id="exportCsvBtn" class="export-btn">📥 CSV</button>
                     </div>
-                    <button id="resetDateBtn" class="reset-btn">🗑️ আজকের ডাটা রিসেট</button>
+                    <div class="goal-section">
+                        <label>🎯 দৈনিক পড়ার লক্ষ্য (ঘন্টা):</label>
+                        <input type="number" id="dailyGoalInput" class="goal-input" min="0" max="24" step="0.5"
+                            value="3">
+                        <div class="goal-progress">
+                            <div class="goal-fill" id="goalFill"></div>
+                        </div>
+                        <div id="goalStatusText">অগ্রগতি: 0/3 ঘন্টা</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- উন্নত অ্যানালাইসিস প্যানেল -->
-            <div class="analytics-panel" id="analyticsPanel">
-                <div class="stat-card">
-                    <h3>📖 মোট পড়ার ঘন্টা</h3>
-                    <div class="stat-number" id="studyHours">0</div>
-                    <div id="studyTopicsList" style="font-size:12px"></div>
+            <div class="analytics-row">
+                <div class="stat-cards">
+                    <div class="stat-card">
+                        <h3>📖 পড়া</h3>
+                        <div class="stat-number" id="studyHours">0</div>
+                        <div id="studyTopicsList" style="font-size:11px"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>😴 ঘুম</h3>
+                        <div class="stat-number" id="sleepHours">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>⚙️ স্কিল</h3>
+                        <div class="stat-number" id="skillHours">0</div>
+                        <div id="skillTopicsList" style="font-size:11px"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>✅ সম্পন্ন</h3>
+                        <div class="stat-number" id="completedHours">0</div>
+                        <div>মোট ২৪ ঘন্টা</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <h3>😴 মোট ঘুমের ঘন্টা</h3>
-                    <div class="stat-number" id="sleepHours">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>⚙️ স্কিল ডেভেলপমেন্ট</h3>
-                    <div class="stat-number" id="skillHours">0</div>
-                    <div id="skillTopicsList" style="font-size:12px"></div>
-                </div>
-                <div class="stat-card">
-                    <h3>✅ সম্পন্ন ঘন্টা</h3>
-                    <div class="stat-number" id="completedHours">0</div>
-                    <div>মোট ২৪ ঘন্টা</div>
+                <div class="chart-container">
+                    <canvas id="activityChart" width="200" height="200"></canvas>
                 </div>
             </div>
 
-            <!-- সাজেশন ও উন্নতির ক্ষেত্র -->
-            <div id="suggestionArea" class="suggestion-box" style="margin: 0 28px 20px 28px;">
-                💡 লোড হচ্ছে বিশ্লেষণ...
+            <!-- জার্নাল সেকশন -->
+            <div class="journal-section">
+                <div class="journal-title">📔 দৈনিক জার্নাল / নোট</div>
+                <textarea id="journalInput" class="journal-textarea" rows="3"
+                    placeholder="আজকের দিনটি কেমন গেল? কী শিখলেন? কী সমস্যা হলো? আগামীকালের জন্য পরিকল্পনা..."></textarea>
+                <div class="journal-stats" id="journalStats">0 অক্ষর | শেষ সংরক্ষণ: --</div>
             </div>
 
-            <div id="hoursContainer" class="hours-grid">
-                <!-- dynamic cards -->
+            <div id="suggestionArea" class="suggestion-box">
+                <div class="suggestion-title">💡 বিস্তারিত বিশ্লেষণ ও উন্নতির পরামর্শ</div>
+                <div class="suggestion-text" id="suggestionText">লোড হচ্ছে...</div>
             </div>
-            <div class="footer-note">
-                ✅ প্রতি ঘন্টায় আপনি কি করেছেন সিলেক্ট করুন (পড়া/ঘুম/স্কিল/অন্যান্য), টপিক লিখুন। স্বয়ংক্রিয় সংরক্ষণ।
-                বিশ্লেষণ ও উন্নতির পরামর্শ দেখাবে।
-            </div>
+
+            <div id="hoursContainer" class="hours-grid"></div>
+            <div class="footer-note">✅ রিয়েল টাইম ঘড়ি + গ্রাফ + দৈনিক লক্ষ্য + CSV + জার্নাল + ডার্ক মোড + বিস্তারিত
+                সাজেশন</div>
         </div>
     </div>
 
     <script>
-        // ---------- কনফিগারেশন ----------
         const TOTAL_HOURS = 24;
         let currentDate = getTodayString();
-        let hourlyData = []; // { activityText, category, checked, topicKeywords }
+        let hourlyData = [];
+        let activityChart = null;
 
-        // DOM elements
         const datePicker = document.getElementById('datePicker');
         const todayBtn = document.getElementById('todayBtn');
         const resetDateBtn = document.getElementById('resetDateBtn');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
         const hoursContainer = document.getElementById('hoursContainer');
         const studyHoursSpan = document.getElementById('studyHours');
         const sleepHoursSpan = document.getElementById('sleepHours');
@@ -298,266 +498,299 @@
         const completedHoursSpan = document.getElementById('completedHours');
         const studyTopicsListDiv = document.getElementById('studyTopicsList');
         const skillTopicsListDiv = document.getElementById('skillTopicsList');
-        const suggestionArea = document.getElementById('suggestionArea');
+        const suggestionText = document.getElementById('suggestionText');
+        const liveClockSpan = document.getElementById('liveClock');
+        const dailyGoalInput = document.getElementById('dailyGoalInput');
+        const goalFill = document.getElementById('goalFill');
+        const goalStatusText = document.getElementById('goalStatusText');
+        const journalInput = document.getElementById('journalInput');
+        const journalStats = document.getElementById('journalStats');
+        const darkModeToggle = document.getElementById('darkModeToggle');
 
-        // helpers
         function getTodayString() {
             const d = new Date();
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
-
+        function getCurrentHour() { return new Date().getHours(); }
         function formatHour(hour24) {
             let period = hour24 >= 12 ? 'PM' : 'AM';
             let hour12 = hour24 % 12;
             if (hour12 === 0) hour12 = 12;
             return `${hour12}${period} (${hour24}:00)`;
         }
-
-        // create empty dataset
         function createEmptyDataset() {
-            return Array(TOTAL_HOURS).fill().map(() => ({
-                activityText: '',
-                category: 'other',     // 'study', 'sleep', 'skill', 'other'
-                checked: false,
-                topic: ''              // specific topic name (যে বিষয় পড়লাম / কোন স্কিল)
-            }));
+            return Array(TOTAL_HOURS).fill().map(() => ({ activityText: '', category: 'other', checked: false, topic: '' }));
         }
-
-        // save to localStorage (per date)
         function saveToLocalStorage() {
-            const key = `smartTracker_${currentDate}`;
-            localStorage.setItem(key, JSON.stringify(hourlyData));
-            updateAnalyticsAndSuggestions();
+            localStorage.setItem(`smartTracker_${currentDate}`, JSON.stringify(hourlyData));
+            localStorage.setItem(`goal_${currentDate}`, dailyGoalInput.value);
+            localStorage.setItem(`journal_${currentDate}`, journalInput.value);
+            updateAnalyticsAndChart();
+            updateJournalStats();
         }
-
         function loadFromLocalStorage(date) {
-            const key = `smartTracker_${date}`;
-            const raw = localStorage.getItem(key);
+            const raw = localStorage.getItem(`smartTracker_${date}`);
             if (raw) {
                 try {
                     let parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length === TOTAL_HOURS) {
-                        return parsed.map(item => ({
-                            activityText: item.activityText || '',
-                            category: item.category || 'other',
-                            checked: item.checked === true,
-                            topic: item.topic || ''
-                        }));
-                    }
+                    if (parsed && parsed.length === TOTAL_HOURS) return parsed;
                 } catch (e) { }
             }
             return createEmptyDataset();
         }
-
-        // switch date
+        function loadGoal() {
+            const savedGoal = localStorage.getItem(`goal_${currentDate}`);
+            if (savedGoal) dailyGoalInput.value = savedGoal;
+        }
+        function loadJournal() {
+            const savedJournal = localStorage.getItem(`journal_${currentDate}`);
+            if (savedJournal) journalInput.value = savedJournal;
+            updateJournalStats();
+        }
+        function updateJournalStats() {
+            const length = journalInput.value.length;
+            const lastSave = localStorage.getItem(`journal_lastSave_${currentDate}`) || 'কখনও না';
+            journalStats.innerText = `${length} অক্ষর | শেষ সংরক্ষণ: ${lastSave}`;
+        }
         function setCurrentDate(dateStr) {
             currentDate = dateStr;
             datePicker.value = currentDate;
             hourlyData = loadFromLocalStorage(currentDate);
+            loadGoal();
+            loadJournal();
             renderAllHours();
-            updateAnalyticsAndSuggestions();
+            updateAnalyticsAndChart();
+            highlightCurrentHourCard();
         }
 
-        // রেন্ডার ২৪টি কার্ড
+        // ডার্ক মোড টগল
+        function initDarkMode() {
+            const savedMode = localStorage.getItem('darkMode');
+            if (savedMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '☀️ লাইট মোড';
+            }
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('darkMode', 'enabled');
+                    darkModeToggle.innerHTML = '☀️ লাইট মোড';
+                } else {
+                    localStorage.setItem('darkMode', 'disabled');
+                    darkModeToggle.innerHTML = '🌙 ডার্ক মোড';
+                }
+            });
+        }
+
+        function startRealTimeClock() {
+            function updateClock() {
+                const now = new Date();
+                liveClockSpan.innerText = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                highlightCurrentHourCard();
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        function highlightCurrentHourCard() {
+            document.querySelectorAll('.hour-card').forEach(card => card.classList.remove('current-hour-highlight'));
+            const currentHour = getCurrentHour();
+            const targetCard = document.querySelector(`.hour-card[data-hour-index='${currentHour}']`);
+            if (targetCard) targetCard.classList.add('current-hour-highlight');
+        }
+
         function renderAllHours() {
-            if (!hoursContainer) return;
             hoursContainer.innerHTML = '';
             for (let i = 0; i < TOTAL_HOURS; i++) {
                 const data = hourlyData[i];
                 const card = document.createElement('div');
                 card.className = 'hour-card';
-                card.dataset.index = i;
+                card.dataset.hourIndex = i;
+                card.innerHTML = `
+                <div class="hour-header">
+                    <div class="hour-label">${formatHour(i)}</div>
+                    <div style="font-size:0.7rem">${data.checked ? '✅ সমাপ্ত' : '⏳ বাকি'}</div>
+                </div>
+                <div class="activity-form">
+                    <input type="text" class="activity-input" placeholder="কি করলেন?" value="${escapeHtml(data.activityText)}">
+                    <select class="select-category">
+                        <option value="study" ${data.category === 'study' ? 'selected' : ''}>📚 পড়া / অধ্যয়ন</option>
+                        <option value="sleep" ${data.category === 'sleep' ? 'selected' : ''}>😴 ঘুম</option>
+                        <option value="skill" ${data.category === 'skill' ? 'selected' : ''}>💻 স্কিল ডেভেলপমেন্ট</option>
+                        <option value="other" ${data.category === 'other' ? 'selected' : ''}>🔘 অন্যান্য</option>
+                    </select>
+                    <input type="text" class="activity-input" placeholder="বিষয়/স্কিলের নাম" value="${escapeHtml(data.topic)}">
+                    <div class="checkbox-row">
+                        <input type="checkbox" ${data.checked ? 'checked' : ''}> <label>এই ঘন্টা সম্পন্ন হয়েছে</label>
+                    </div>
+                </div>
+            `;
+                const actInput = card.querySelector('.activity-form input:first-child');
+                const catSelect = card.querySelector('.select-category');
+                const topicInput = card.querySelector('.activity-form input:nth-child(3)');
+                const chk = card.querySelector('.checkbox-row input');
+                const statusDiv = card.querySelector('.hour-header div:last-child');
 
-                // header
-                const header = document.createElement('div');
-                header.className = 'hour-header';
-                const hourLabel = document.createElement('div');
-                hourLabel.className = 'hour-label';
-                hourLabel.innerText = formatHour(i);
-                const checkStatusSpan = document.createElement('div');
-                checkStatusSpan.innerText = data.checked ? '✅ সমাপ্ত' : '⏳ বাকি';
-                checkStatusSpan.style.fontSize = '0.7rem';
-                header.appendChild(hourLabel);
-                header.appendChild(checkStatusSpan);
-
-                // form body
-                const formDiv = document.createElement('div');
-                formDiv.className = 'activity-form';
-
-                // activity text input
-                const actInput = document.createElement('input');
-                actInput.type = 'text';
-                actInput.placeholder = 'কি করলেন? (যেমন: গণিত অনুশীলন, Node.js শেখা)';
-                actInput.value = data.activityText;
-                actInput.className = 'activity-input';
-
-                // category select
-                const catSelect = document.createElement('select');
-                catSelect.className = 'select-category';
-                const categories = [
-                    { value: 'study', label: '📚 পড়া / অধ্যয়ন' },
-                    { value: 'sleep', label: '😴 ঘুম' },
-                    { value: 'skill', label: '💻 স্কিল ডেভেলপমেন্ট' },
-                    { value: 'other', label: '🔘 অন্যান্য' }
-                ];
-                categories.forEach(cat => {
-                    const opt = document.createElement('option');
-                    opt.value = cat.value;
-                    opt.innerText = cat.label;
-                    if (data.category === cat.value) opt.selected = true;
-                    catSelect.appendChild(opt);
+                actInput.addEventListener('input', (e) => { hourlyData[i].activityText = e.target.value; saveToLocalStorage(); });
+                catSelect.addEventListener('change', (e) => { hourlyData[i].category = e.target.value; saveToLocalStorage(); });
+                topicInput.addEventListener('input', (e) => { hourlyData[i].topic = e.target.value; saveToLocalStorage(); });
+                chk.addEventListener('change', (e) => {
+                    hourlyData[i].checked = e.target.checked;
+                    statusDiv.innerText = e.target.checked ? '✅ সমাপ্ত' : '⏳ বাকি';
+                    saveToLocalStorage();
                 });
-
-                // topic input (বিষয় বা স্কিলের নাম)
-                const topicInput = document.createElement('input');
-                topicInput.type = 'text';
-                topicInput.placeholder = 'বিষয়/স্কিলের নাম (যেমন: অ্যালগরিদম, রিয়্যাক্ট, ইংরেজি ব্যাকরণ)';
-                topicInput.value = data.topic;
-                topicInput.className = 'activity-input';
-
-                // checkbox row
-                const checkRow = document.createElement('div');
-                checkRow.className = 'checkbox-row';
-                const chk = document.createElement('input');
-                chk.type = 'checkbox';
-                chk.checked = data.checked;
-                const chkLabel = document.createElement('label');
-                chkLabel.innerText = 'এই ঘন্টা সম্পন্ন হয়েছে';
-                checkRow.appendChild(chk);
-                checkRow.appendChild(chkLabel);
-
-                formDiv.appendChild(actInput);
-                formDiv.appendChild(catSelect);
-                formDiv.appendChild(topicInput);
-                formDiv.appendChild(checkRow);
-                card.appendChild(header);
-                card.appendChild(formDiv);
-
-                // event listeners
-                actInput.addEventListener('input', (e) => { hourlyData[i].activityText = e.target.value; saveToLocalStorage(); updateSingleCardStatus(card, hourlyData[i]); });
-                catSelect.addEventListener('change', (e) => { hourlyData[i].category = e.target.value; saveToLocalStorage(); updateAnalyticsAndSuggestions(); });
-                topicInput.addEventListener('input', (e) => { hourlyData[i].topic = e.target.value; saveToLocalStorage(); updateAnalyticsAndSuggestions(); });
-                chk.addEventListener('change', (e) => { hourlyData[i].checked = e.target.checked; updateSingleCardStatus(card, hourlyData[i]); saveToLocalStorage(); });
-
                 hoursContainer.appendChild(card);
             }
+            highlightCurrentHourCard();
         }
 
-        function updateSingleCardStatus(card, data) {
-            const headerDiv = card.querySelector('.hour-header');
-            if (headerDiv) {
-                let statusSpan = headerDiv.querySelector('div:last-child');
-                if (statusSpan) statusSpan.innerText = data.checked ? '✅ সমাপ্ত' : '⏳ বাকি';
-            }
-        }
-
-        // বিশ্লেষণ: পড়া, ঘুম, স্কিলের মোট ঘন্টা এবং টপিক সংগ্রহ
         function computeAnalytics() {
             let studyCount = 0, sleepCount = 0, skillCount = 0, completedCount = 0;
-            let studyTopics = [];
-            let skillTopics = [];
-
+            let studyTopics = [], skillTopics = [];
             for (let entry of hourlyData) {
                 if (entry.checked) completedCount++;
                 if (entry.category === 'study') {
                     studyCount++;
-                    if (entry.topic && entry.topic.trim() !== '') studyTopics.push(entry.topic.trim());
-                    else if (entry.activityText && entry.activityText.trim() !== '') studyTopics.push(entry.activityText.trim().substring(0, 30));
+                    if (entry.topic?.trim()) studyTopics.push(entry.topic.trim());
+                    else if (entry.activityText?.trim()) studyTopics.push(entry.activityText.trim().substring(0, 30));
                 }
                 else if (entry.category === 'sleep') sleepCount++;
                 else if (entry.category === 'skill') {
                     skillCount++;
-                    if (entry.topic && entry.topic.trim() !== '') skillTopics.push(entry.topic.trim());
-                    else if (entry.activityText && entry.activityText.trim() !== '') skillTopics.push(entry.activityText.trim().substring(0, 30));
+                    if (entry.topic?.trim()) skillTopics.push(entry.topic.trim());
+                    else if (entry.activityText?.trim()) skillTopics.push(entry.activityText.trim().substring(0, 30));
                 }
             }
-
-            // unique topics frequency
             const uniqueStudy = [...new Map(studyTopics.map(t => [t.toLowerCase(), t])).values()];
             const uniqueSkill = [...new Map(skillTopics.map(t => [t.toLowerCase(), t])).values()];
-
             return { studyCount, sleepCount, skillCount, completedCount, studyTopicsList: uniqueStudy.slice(0, 5), skillTopicsList: uniqueSkill.slice(0, 5) };
         }
 
-        // উন্নতির সাজেশন জেনারেট করুন
-        function generateSuggestions(analytics) {
-            const { studyCount, sleepCount, skillCount, completedCount, studyTopicsList, skillTopicsList } = analytics;
-            const remaining = 24 - completedCount;
-            let suggestionText = "";
-            let improvementTips = [];
-
-            // স্বাস্থ্যকর ঘুম বিশ্লেষণ
-            if (sleepCount < 6) improvementTips.push(`😴 আপনি মাত্র ${sleepCount} ঘন্টা ঘুমিয়েছেন। প্রাপ্তবয়স্কদের জন্য ৭-৮ ঘন্টা ঘুম জরুরি। আজ রাতে তাড়াতাড়ি ঘুমানোর চেষ্টা করুন।`);
-            else if (sleepCount >= 7) improvementTips.push(`😊 ভালো ঘুম (${sleepCount} ঘন্টা) পেয়েছেন। এটি মানসিক স্বাস্থ্যের জন্য ইতিবাচক।`);
-
-            // পড়ার অভ্যাস
-            if (studyCount < 2) improvementTips.push(`📖 পড়ার সময় মাত্র ${studyCount} ঘন্টা। প্রতিদিন কমপক্ষে ২ ঘন্টা পড়ার লক্ষ্য নিন।`);
-            else if (studyCount >= 3) improvementTips.push(`🎯 চমৎকার! আপনি ${studyCount} ঘন্টা পড়েছেন, ধারাবাহিকতা বজায় রাখুন।`);
-
-            // স্কিল ডেভেলপমেন্ট
-            if (skillCount < 1) improvementTips.push(`⚙️ আজ স্কিল ডেভেলপমেন্টে সময় দেননি। ১ ঘন্টা নতুন কিছু শিখুন (কোডিং, ভাষা, ডিজাইন) ভবিষ্যতের জন্য বড় সুবিধা।`);
-            else if (skillCount >= 2) improvementTips.push(`💪 স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন, দারুণ! ${skillTopicsList.length > 0 ? `আপনি শিখছেন: ${skillTopicsList.join(', ')}` : ''}`);
-
-            // টপিক ও উন্নতি
-            if (studyTopicsList.length > 0) suggestionText += `📚 পড়া বিষয়: ${studyTopicsList.join(', ')}. `;
-            if (skillTopicsList.length > 0) suggestionText += `🎓 স্কিল টপিক: ${skillTopicsList.join(', ')}. `;
-
-            if (remaining > 12) improvementTips.push(`⏳ এখনও ${remaining} ঘন্টা বাকি আছে অনির্ধারিত। আগামী ঘন্টাগুলোর জন্য পরিকল্পনা করুন (পড়া/স্কিল নির্ধারণ করুন)।`);
-
-            if (completedCount === 24) improvementTips.push(`🎉 অসাধারণ! সম্পূর্ণ দিন ট্র্যাক করেছেন। প্রতিদিন এই ধারাবাহিকতা আনুন।`);
-
-            let finalSuggestion = suggestionText + " উন্নতির পরামর্শ: " + improvementTips.join(" · ");
-            if (improvementTips.length === 0) finalSuggestion = "👍 চালিয়ে যান! আপনার সময় ব্যবস্থাপনা ভালো, আরও পড়া ও স্কিলে ফোকাস করতে পারেন।";
-
-            return finalSuggestion;
+        function updateGoalProgress(studyHours) {
+            const goal = parseFloat(dailyGoalInput.value) || 0;
+            const percent = Math.min(100, (studyHours / goal) * 100);
+            goalFill.style.width = `${percent}%`;
+            goalStatusText.innerText = `অগ্রগতি: ${studyHours}/${goal} ঘন্টা (${Math.round(percent)}%)`;
+            if (goal > 0 && studyHours >= goal) {
+                if (!localStorage.getItem(`goal_celebrated_${currentDate}`)) {
+                    showConfettiMessage("🎉 অভিনন্দন! দৈনিক লক্ষ্য পূরণ করেছেন! 🎉");
+                    localStorage.setItem(`goal_celebrated_${currentDate}`, 'true');
+                }
+            }
         }
 
-        function updateAnalyticsAndSuggestions() {
+        function updateChart(study, sleep, skill) {
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            if (activityChart) activityChart.destroy();
+            activityChart = new Chart(ctx, {
+                type: 'pie',
+                data: { labels: ['পড়া 📖', 'ঘুম 😴', 'স্কিল 💻', 'অন্যান্য'], datasets: [{ data: [study, sleep, skill, Math.max(0, 24 - (study + sleep + skill))], backgroundColor: ['#f9a826', '#2c7a4d', '#1f4e6e', '#b0b0b0'] }] },
+                options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+            });
+        }
+
+        function generateDetailedSuggestions(analytics) {
+            const { studyCount, sleepCount, skillCount, completedCount, studyTopicsList, skillTopicsList } = analytics;
+            const remaining = 24 - completedCount;
+            let improvementTips = [];
+
+            if (sleepCount < 6) improvementTips.push(`😴 আপনি মাত্র ${sleepCount} ঘন্টা ঘুমিয়েছেন। প্রাপ্তবয়স্কদের জন্য ৭-৮ ঘন্টা ঘুম জরুরি।`);
+            else if (sleepCount >= 7) improvementTips.push(`😊 ভালো ঘুম (${sleepCount} ঘন্টা) পেয়েছেন। এটি মানসিক স্বাস্থ্যের জন্য ইতিবাচক।`);
+
+            if (studyCount < 2) improvementTips.push(`📖 পড়ার সময় মাত্র ${studyCount} ঘন্টা। প্রতিদিন কমপক্ষে ২-৩ ঘন্টা পড়ার লক্ষ্য নিন।`);
+            else if (studyCount >= 3 && studyCount < 5) improvementTips.push(`🎯 ভালো! আপনি ${studyCount} ঘন্টা পড়েছেন, ধারাবাহিকতা বজায় রাখুন।`);
+            else if (studyCount >= 5) improvementTips.push(`🏆 অসাধারণ! ${studyCount} ঘন্টা পড়া সত্যিই প্রশংসনীয়।`);
+
+            if (skillCount < 1) improvementTips.push(`⚙️ আজ স্কিল ডেভেলপমেন্টে সময় দেননি। ১ ঘন্টা নতুন কিছু শিখুন।`);
+            else if (skillCount >= 2) improvementTips.push(`🔥 চমৎকার! স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন।`);
+
+            if (remaining > 12) improvementTips.push(`⏳ এখনও ${remaining} ঘন্টা বাকি। পরিকল্পনা করুন।`);
+
+            if (studyTopicsList.length > 0) improvementTips.push(`📚 পড়া বিষয়: ${studyTopicsList.join(', ')}`);
+            if (skillTopicsList.length > 0) improvementTips.push(`🎓 স্কিল টপিক: ${skillTopicsList.join(', ')}`);
+
+            if (completedCount === 24) improvementTips.push(`🎉 অসাধারণ! সম্পূর্ণ দিন ট্র্যাক করেছেন!`);
+
+            return improvementTips.length ? improvementTips.map(tip => `• ${tip}`).join('<br>') : "👍 চমৎকার! সময় ব্যবস্থাপনা ভালো।";
+        }
+
+        function updateAnalyticsAndChart() {
             const analytics = computeAnalytics();
             studyHoursSpan.innerText = analytics.studyCount;
             sleepHoursSpan.innerText = analytics.sleepCount;
             skillHoursSpan.innerText = analytics.skillCount;
             completedHoursSpan.innerText = analytics.completedCount;
-
-            // টপিক লিস্ট দেখানো
-            if (analytics.studyTopicsList.length === 0) studyTopicsListDiv.innerHTML = '<span style="font-size:11px;">কোনো বিষয় যোগ করেনি</span>';
-            else studyTopicsListDiv.innerHTML = analytics.studyTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('');
-
-            if (analytics.skillTopicsList.length === 0) skillTopicsListDiv.innerHTML = '<span style="font-size:11px;">কোনো স্কিল টপিক নেই</span>';
-            else skillTopicsListDiv.innerHTML = analytics.skillTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('');
-
-            const suggestion = generateSuggestions(analytics);
-            suggestionArea.innerHTML = `💡 <strong>বিশ্লেষণ ও সাজেশন:</strong> ${suggestion}`;
-
-            // অতিরিক্ত: কোন কোন ঘন্টায় পড়া/স্কিল বেশি সেটাও দেখাতে পারে, কিন্তু মূল সাজেশন যথেষ্ট
+            studyTopicsListDiv.innerHTML = analytics.studyTopicsList.length ? analytics.studyTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('') : '-';
+            skillTopicsListDiv.innerHTML = analytics.skillTopicsList.length ? analytics.skillTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('') : '-';
+            updateChart(analytics.studyCount, analytics.sleepCount, analytics.skillCount);
+            updateGoalProgress(analytics.studyCount);
+            suggestionText.innerHTML = generateDetailedSuggestions(analytics);
         }
 
-        function escapeHtml(str) { return str.replace(/[&<>]/g, function (m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+        function exportToCSV() {
+            let csvRows = [["ঘন্টা", "ক্যাটাগরি", "অ্যাক্টিভিটি", "টপিক", "সম্পন্ন"]];
+            for (let i = 0; i < hourlyData.length; i++) {
+                const d = hourlyData[i];
+                csvRows.push([`${i}:00-${i + 1}:00`, d.category, d.activityText, d.topic, d.checked ? "হ্যাঁ" : "না"]);
+            }
+            const blob = new Blob([csvRows.map(row => row.join(",")).join("\n")], { type: "text/csv" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `tracker_${currentDate}.csv`;
+            link.click();
+            showConfettiMessage("📥 CSV ডাউনলোড শুরু!");
+        }
 
-        // রিসেট বর্তমান তারিখের ডাটা
+        function showConfettiMessage(msg) {
+            const div = document.createElement('div');
+            div.className = 'confetti-message';
+            div.innerText = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
         function resetCurrentDate() {
-            if (confirm(`"${currentDate}" তারিখের সব রেকর্ড মুছে ফেলতে চান? (পড়া, ঘুম, স্কিল সহ সব রিসেট হবে)`)) {
+            if (confirm(`"${currentDate}" তারিখের সব রেকর্ড রিসেট করবেন?`)) {
                 hourlyData = createEmptyDataset();
+                journalInput.value = '';
                 saveToLocalStorage();
                 renderAllHours();
-                updateAnalyticsAndSuggestions();
+                updateAnalyticsAndChart();
+                showConfettiMessage("🗑️ ডাটা রিসেট হয়েছে");
             }
         }
 
-        // event listeners
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m];
+            });
+        }
+
+        journalInput.addEventListener('input', () => {
+            const now = new Date().toLocaleTimeString();
+            localStorage.setItem(`journal_${currentDate}`, journalInput.value);
+            localStorage.setItem(`journal_lastSave_${currentDate}`, now);
+            updateJournalStats();
+        });
+
         datePicker.addEventListener('change', (e) => setCurrentDate(e.target.value));
         todayBtn.addEventListener('click', () => setCurrentDate(getTodayString()));
         resetDateBtn.addEventListener('click', resetCurrentDate);
+        exportCsvBtn.addEventListener('click', exportToCSV);
+        dailyGoalInput.addEventListener('change', () => { saveToLocalStorage(); updateAnalyticsAndChart(); });
 
-        // init
         function init() {
             currentDate = getTodayString();
             datePicker.value = currentDate;
             hourlyData = loadFromLocalStorage(currentDate);
+            loadGoal();
+            loadJournal();
             renderAllHours();
-            updateAnalyticsAndSuggestions();
+            updateAnalyticsAndChart();
+            startRealTimeClock();
+            initDarkMode();
         }
-
         init();
     </script>
 </body>
