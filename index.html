@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>সম্পূর্ণ ট্র্যাকার | নামাজ + বিস্তারিত বিশ্লেষণ + বাকি ঘন্টা</title>
+    <title>সম্পূর্ণ ট্র্যাকার | নামাজ + বিস্তারিত সাজেশন (আগের স্টাইলে)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -183,34 +183,34 @@
 
         .prayer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
         }
 
         .prayer-item {
             background: var(--hour-card-bg);
             border-radius: 20px;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
             border: 1px solid var(--border-color);
         }
 
         .prayer-name {
             font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
         }
 
         .prayer-check {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .prayer-check input {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             cursor: pointer;
         }
 
@@ -220,7 +220,7 @@
             border-top: 1px solid var(--border-color);
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
         }
 
         .quran-input {
@@ -243,7 +243,7 @@
 
         .stat-cards {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
         }
 
@@ -255,12 +255,12 @@
         }
 
         .stat-card h3 {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
         }
 
         .stat-number {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: #f9a826;
         }
@@ -340,13 +340,13 @@
             padding: 18px 24px;
             border-radius: 28px;
             margin: 0 28px 20px 28px;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         .suggestion-title {
             font-weight: bold;
             font-size: 1rem;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: #f9a826;
         }
 
@@ -354,14 +354,8 @@
             font-size: 0.95rem;
         }
 
-        .remaining-hours-badge {
-            background: #f9a826;
-            color: #0f2b3d;
-            padding: 5px 12px;
-            border-radius: 30px;
-            display: inline-block;
-            margin-top: 10px;
-            font-weight: bold;
+        .suggestion-text strong {
+            color: #f9a826;
         }
 
         .hours-grid {
@@ -454,9 +448,19 @@
             }
         }
 
-        @media (max-width: 800px) {
+        @media (max-width: 900px) {
             .analytics-row {
                 grid-template-columns: 1fr;
+            }
+
+            .stat-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 550px) {
+            .stat-cards {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -512,7 +516,7 @@
                     <div class="stat-card">
                         <h3>📖 পড়া</h3>
                         <div class="stat-number" id="studyHours">0</div>
-                        <div id="studyTopicsList" style="font-size:11px"></div>
+                        <div id="studyTopicsList" style="font-size:10px"></div>
                     </div>
                     <div class="stat-card">
                         <h3>😴 ঘুম</h3>
@@ -521,7 +525,12 @@
                     <div class="stat-card">
                         <h3>⚙️ স্কিল</h3>
                         <div class="stat-number" id="skillHours">0</div>
-                        <div id="skillTopicsList" style="font-size:11px"></div>
+                        <div id="skillTopicsList" style="font-size:10px"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🕌 ইবাদত</h3>
+                        <div class="stat-number" id="prayerCount">0</div>
+                        <div id="prayerDetails" style="font-size:10px"></div>
                     </div>
                     <div class="stat-card">
                         <h3>✅ সম্পন্ন</h3>
@@ -537,7 +546,7 @@
             <div class="journal-section">
                 <div class="journal-title">📔 দৈনিক জার্নাল / নোট</div>
                 <textarea id="journalInput" class="journal-textarea" rows="3"
-                    placeholder="আজকের দিনটি কেমন গেল? কী শিখলেন? কী সমস্যা হলো?"></textarea>
+                    placeholder="আজকের দিনটি কেমন গেল? কী শিখলেন? কী সমস্যা হলো? আগামীকালের জন্য পরিকল্পনা..."></textarea>
                 <div style="font-size:0.7rem; margin-top:8px;" id="journalStats">0 অক্ষর | শেষ সংরক্ষণ: --</div>
             </div>
 
@@ -548,7 +557,7 @@
 
             <div id="hoursContainer" class="hours-grid"></div>
             <div class="footer-note">✅ রিয়েল টাইম ঘড়ি + গ্রাফ + লক্ষ্য + CSV + জার্নাল + ডার্ক মোড + ইবাদত ট্র্যাকার +
-                বাকি ঘন্টা দেখাবে</div>
+                ৫টি স্ট্যাটাস কার্ড + বিস্তারিত সাজেশন</div>
         </div>
     </div>
 
@@ -568,6 +577,8 @@
         const sleepHoursSpan = document.getElementById('sleepHours');
         const skillHoursSpan = document.getElementById('skillHours');
         const completedHoursSpan = document.getElementById('completedHours');
+        const prayerCountSpan = document.getElementById('prayerCount');
+        const prayerDetailsSpan = document.getElementById('prayerDetails');
         const studyTopicsListDiv = document.getElementById('studyTopicsList');
         const skillTopicsListDiv = document.getElementById('skillTopicsList');
         const suggestionText = document.getElementById('suggestionText');
@@ -594,6 +605,13 @@
         }
         function createEmptyDataset() {
             return Array(TOTAL_HOURS).fill().map(() => ({ activityText: '', category: 'other', checked: false, topic: '' }));
+        }
+
+        function getPrayerNames(religion) {
+            if (religion === 'muslim') return ['ফজর', 'যোহর', 'আসর', 'মাগরিব', 'ইশা', 'তাহাজ্জুদ'];
+            if (religion === 'hindu') return ['পূজা', 'মন্ত্র জপ', 'মন্দির', 'ধ্যান'];
+            if (religion === 'christian') return ['প্রার্থনা', 'বাইবেল', 'গির্জা', 'উপাসনা'];
+            return ['আধ্যাত্মিক চর্চা'];
         }
 
         function getDefaultPrayerData(religion) {
@@ -844,9 +862,19 @@
                 else if (entry.category === 'skill') { skillCount++; if (entry.topic?.trim()) skillTopics.push(entry.topic.trim()); }
             }
             let prayerCount = 0;
-            if (prayerData.prayers) prayerCount = Object.values(prayerData.prayers).filter(v => v === true).length;
+            let completedPrayers = [];
+            if (prayerData.prayers) {
+                const prayerNames = getPrayerNames(prayerData.religion);
+                const prayerIds = Object.keys(prayerData.prayers);
+                prayerIds.forEach((id, idx) => {
+                    if (prayerData.prayers[id]) {
+                        prayerCount++;
+                        if (prayerNames[idx]) completedPrayers.push(prayerNames[idx]);
+                    }
+                });
+            }
             const remainingHours = TOTAL_HOURS - completedCount;
-            return { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, studyTopicsList: studyTopics.slice(0, 5), skillTopicsList: skillTopics.slice(0, 5) };
+            return { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, studyTopicsList: studyTopics.slice(0, 4), skillTopicsList: skillTopics.slice(0, 4) };
         }
 
         function updateGoalProgress(studyHours) {
@@ -870,11 +898,12 @@
             });
         }
 
+        // আগের সংস্করণের বিস্তারিত সাজেশন ফরম্যাট (বুলেট পয়েন্টে)
         function generateDetailedSuggestions(analytics) {
-            const { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, studyTopicsList, skillTopicsList } = analytics;
+            const { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, studyTopicsList, skillTopicsList } = analytics;
             let tips = [];
 
-            // বাকি ঘন্টা দেখানো - সবচেয়ে গুরুত্বপূর্ণ
+            // বাকি ঘন্টা - সবার উপরে
             tips.push(`⏰ <strong>আজকে এখনও ${remainingHours} ঘন্টা বাকি আছে!</strong> এই সময়টা কাজে লাগানোর পরিকল্পনা করুন।`);
 
             // ঘুম সম্পর্কিত সাজেশন
@@ -892,9 +921,10 @@
             else if (skillCount >= 1 && skillCount < 2) tips.push(`💪 স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন, ভালো। আরও বাড়ান।`);
             else if (skillCount >= 2) tips.push(`🔥 চমৎকার! স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন। এটাই সাফল্যের চাবি!`);
 
-            // ইবাদত সম্পর্কিত সাজেশন
-            if (prayerCount > 0 && prayerCount < 3) tips.push(`🕌 ইবাদত ${prayerCount} বার করেছেন। নিয়মিত করার চেষ্টা করুন।`);
-            else if (prayerCount >= 5) tips.push(`🌟 চমৎকার! ইবাদতে ধারাবাহিকতা বজায় রাখুন।`);
+            // ইবাদত সম্পর্কিত সাজেশন (নতুন)
+            if (prayerCount === 0) tips.push(`🕌 আজকে ইবাদত ট্র্যাক করেননি। আপনার ধর্মীয় চর্চার জন্য কিছু সময় বের করুন।`);
+            else if (prayerCount > 0 && prayerCount < 3) tips.push(`🕌 ইবাদত ${prayerCount} বার করেছেন। নিয়মিত করার চেষ্টা করুন।`);
+            else if (prayerCount >= 5) tips.push(`🌟 চমৎকার! ইবাদতে ধারাবাহিকতা বজায় রাখুন। এটি মানসিক প্রশান্তি আনে।`);
 
             // টপিক ভিত্তিক সাজেশন
             if (studyTopicsList.length > 0) tips.push(`📚 আপনি পড়েছেন: ${studyTopicsList.join(', ')}। এই বিষয়গুলো নিয়মিত পড়তে থাকুন।`);
@@ -905,6 +935,8 @@
                 tips.push(`📋 এখনও অনেক সময় বাকি! আগামী ঘন্টাগুলোর জন্য পড়া এবং স্কিল ডেভেলপমেন্টে ফোকাস করুন।`);
             } else if (remainingHours > 6 && remainingHours <= 12) {
                 tips.push(`📋 বাকি ${remainingHours} ঘন্টা। এই সময়ে পড়া এবং স্কিল ডেভেলপমেন্টে ফোকাস করুন।`);
+            } else if (remainingHours <= 6 && remainingHours > 0) {
+                tips.push(`📋 বাকি মাত্র ${remainingHours} ঘন্টা। এই সময়টুকু ভালোভাবে কাজে লাগান।`);
             }
 
             // মোটিভেশনাল
@@ -913,7 +945,9 @@
             }
 
             const productiveTotal = studyCount + skillCount;
-            if (productiveTotal > 0 && productiveTotal < 4) {
+            if (productiveTotal === 0 && completedCount > 0) {
+                tips.push(`🌟 পরামর্শ: আজকে উৎপাদনশীল কাজ কম হয়েছে। আগামীকাল ছোট ছোট লক্ষ্য নিয়ে শুরু করুন।`);
+            } else if (productiveTotal > 0 && productiveTotal < 4) {
                 tips.push(`🌟 পরামর্শ: উৎপাদনশীল সময় বাড়ান। ছোট ছোট লক্ষ্য নিন।`);
             } else if (productiveTotal >= 8) {
                 tips.push(`🏅 গুরুত্বপূর্ণ: আপনি আজ খুবই উৎপাদনশীল ছিলেন! এই ধারা বজায় রাখুন।`);
@@ -928,6 +962,8 @@
             sleepHoursSpan.innerText = analytics.sleepCount;
             skillHoursSpan.innerText = analytics.skillCount;
             completedHoursSpan.innerText = analytics.completedCount;
+            prayerCountSpan.innerText = analytics.prayerCount;
+            prayerDetailsSpan.innerHTML = analytics.completedPrayers.length ? analytics.completedPrayers.slice(0, 3).join(', ') + (analytics.completedPrayers.length > 3 ? '...' : '') : '-';
             studyTopicsListDiv.innerHTML = analytics.studyTopicsList.length ? analytics.studyTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('') : '-';
             skillTopicsListDiv.innerHTML = analytics.skillTopicsList.length ? analytics.skillTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('') : '-';
             updateChart(analytics.studyCount, analytics.sleepCount, analytics.skillCount);
