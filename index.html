@@ -644,6 +644,7 @@
                         <button id="resetDateBtn" class="reset-btn">🗑️ রিসেট</button>
                         <button id="exportCsvBtn" class="export-btn">📥 CSV</button>
                         <button id="weeklyReportBtn" class="weekly-report-btn">📊 সাপ্তাহিক রিপোর্ট</button>
+                        <button id="monthlyReportBtn" class="weekly-report-btn" style="background:#6b21a5;">📆 মাসিক রিপোর্ট</button>
                     </div>
                     <div class="goal-section">
                         <label>🎯 দৈনিক পড়ার লক্ষ্য (ঘন্টা):</label>
@@ -660,6 +661,13 @@
             <!-- 10000 Hours Goal Section -->
             <div class="tenk-hours-section">
                 <div class="tenk-title">🎯 ১০,০০০ ঘন্টা স্কিল ডেভেলপমেন্ট গোল</div>
+
+                <div style="background: #f9a82620; padding: 8px 15px; border-radius: 20px; margin-bottom: 15px; font-size: 0.8rem;">
+                    ℹ️ <strong>জেনে রাখুন:</strong> শুধু ১০,০০০ ঘন্টা সময় দিলেই এক্সপার্ট হওয়া যায় না — দরকার <strong>"ডেলিবারেট
+                        প্র্যাকটিস"</strong> (সচেতন, পরিকল্পিত, ফিডব্যাক-ভিত্তিক অনুশীলন)। তবে এটি একটি চমৎকার মোটিভেশনাল টার্গেট!
+                </div>
+
+
                 <div class="skill-goal-card">
                     <div class="skill-progress">
                         <div><strong>বর্তমান স্কিল টপিক:</strong> <input type="text" id="skillTopicName"
@@ -1216,6 +1224,71 @@
             weeklyModal.style.display = 'flex';
         }
 
+
+        // Monthly added 
+        
+            // ============= NEW: Monthly Report Function =============
+            function showMonthlyReport() {
+                let monthlyData = [];
+                let totalStudy = 0;
+                let totalSkill = 0;
+                let daysCount = 0;
+
+                for (let i = 29; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    const data = localStorage.getItem(`smartTracker_${dateStr}`);
+                    let study = 0, skill = 0;
+
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        parsed.forEach(entry => {
+                            if (entry.category === 'study') study++;
+                            else if (entry.category === 'skill') skill++;
+                        });
+                        totalStudy += study;
+                        totalSkill += skill;
+                        daysCount++;
+                    }
+
+                    // প্রতি 7 দিনে একটি এন্ট্রি দেখানোর জন্য (সপ্তাহভিত্তিক)
+                    if (i % 7 === 0 || i === 0) {
+                        monthlyData.push({ date: dateStr, study, skill });
+                    }
+                }
+
+                let html = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h3>📊 গত ৩০ দিনের সারাংশ</h3>
+            <p><strong>📖 মোট পড়া:</strong> ${totalStudy} ঘন্টা</p>
+            <p><strong>⚙️ মোট স্কিল:</strong> ${totalSkill} ঘন্টা</p>
+            <p><strong>📈 গড় পড়া/দিন:</strong> ${(totalStudy / daysCount).toFixed(1)} ঘন্টা</p>
+            <hr>
+        </div>
+        <table style="width:100%; border-collapse:collapse;">
+            <tr style="background: #f9a82620;">
+                <th style="padding:8px;">সপ্তাহ</th>
+                <th style="padding:8px;">📖 পড়া</th>
+                <th style="padding:8px;">⚙️ স্কিল</th>
+            </tr>
+    `;
+
+                let weekNum = 1;
+                for (let i = 0; i < monthlyData.length; i++) {
+                    const day = monthlyData[i];
+                    html += `<tr style="border-bottom:1px solid var(--border-color);">
+                    <td style="padding:8px;">সপ্তাহ ${weekNum++}</td>
+                    <td style="text-align:center;">${day.study}h</td>
+                    <td style="text-align:center;">${day.skill}h</td>
+                 </tr>`;
+                }
+                html += '</table>';
+
+                document.getElementById('weeklyReportContent').innerHTML = html;
+                weeklyModal.style.display = 'flex';
+            }
+
         function exportToCSV() {
             let csvRows = [["ঘন্টা", "ক্যাটাগরি", "অ্যাক্টিভিটি", "টপিক", "সম্পন্ন", "প্রোডাক্টিভ?"]];
             for (let i = 0; i < hourlyData.length; i++) {
@@ -1258,7 +1331,13 @@
         weeklyReportBtn.addEventListener('click', showWeeklyReport);
         dailyGoalInput.addEventListener('change', () => { saveToLocalStorage(); updateAnalyticsAndChart(); });
         document.querySelector('.close-modal')?.addEventListener('click', () => weeklyModal.style.display = 'none');
-        window.addEventListener('click', (e) => { if (e.target === weeklyModal) weeklyModal.style.display = 'none'; });
+        window.addEventListener('click', (e) => { if (e.target === weeklyModal) weeklyModal.style.display = 'none'; }); 
+        
+        // mothly 
+        const monthlyReportBtn = document.getElementById('monthlyReportBtn');
+            if (monthlyReportBtn) {
+                monthlyReportBtn.addEventListener('click', showMonthlyReport);
+            };
 
         function init() {
             currentDate = getTodayString(); datePicker.value = currentDate;
