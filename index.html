@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>পারফেক্ট ট্র্যাকার | ১০০০০ ঘন্টা গোল + স্মার্ট সাজেশন</title>
+    <title>পারফেক্ট ট্র্যাকার | শুধু প্রোডাক্টিভ কাজের স্কোর</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -257,7 +257,6 @@
             color: var(--text-primary);
         }
 
-        /* 10000 Hours Goal Section */
         .tenk-hours-section {
             background: var(--analytics-bg);
             padding: 20px 28px;
@@ -580,6 +579,15 @@
             margin-left: 15px;
         }
 
+        .productive-badge {
+            background: #2c7a4d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+        }
+
         @keyframes fadeOut {
             0% {
                 opacity: 1;
@@ -623,7 +631,7 @@
                     📊 ২৪ ঘণ্টার পারফেক্ট ট্র্যাকার
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <div class="streak-card" id="streakCard">🔥 <span class="streak-number"
-                                id="streakCount">0</span> দিন স্ট্রেক</div>
+                                id="streakCount">0</span> দিন স্ট্রিক</div>
                         <span class="live-clock" id="liveClock">--:--:--</span>
                         <button class="dark-mode-toggle" id="darkModeToggle">🌙 ডার্ক মোড</button>
                     </div>
@@ -713,9 +721,9 @@
                         <div>মোট ২৪ ঘন্টা</div>
                     </div>
                     <div class="stat-card">
-                        <h3>📈 স্কোর</h3>
+                        <h3>📈 প্রোডাক্টিভ স্কোর</h3>
                         <div class="stat-number" id="productivityScore">0</div>
-                        <div>/100</div>
+                        <div><small style="font-size:10px;">শুধু পড়া+স্কিল</small></div>
                     </div>
                 </div>
                 <div class="chart-container">
@@ -747,7 +755,8 @@
             </div>
 
             <div id="hoursContainer" class="hours-grid"></div>
-            <div class="footer-note">✅ অটো আপডেট বাকি ঘন্টা + স্মার্ট সাজেশন + ১০০০০ ঘন্টা গোল + নামাজ ট্র্যাকার</div>
+            <div class="footer-note">✅ শুধু পড়া ও স্কিল ডেভেলপমেন্ট প্রোডাক্টিভ স্কোরে গণনা করা হয়। ঘুম ও অন্যান্য কাজ
+                প্রোডাক্টিভ নয়।</div>
         </div>
     </div>
 
@@ -866,19 +875,14 @@
             skillHoursDisplay.innerText = total;
             skillPercent.innerText = percent.toFixed(2);
 
-            // Milestone celebration
             const milestones = [10, 50, 100, 500, 1000, 5000, 10000];
             let html = '';
             for (let m of milestones) {
-                if (total >= m) {
-                    html += `<span class="milestone-badge">✅ ${m}h অর্জিত!</span>`;
-                } else {
-                    html += `<span class="milestone-badge">🎯 ${m}h বাকি</span>`;
-                }
+                if (total >= m) html += `<span class="milestone-badge">✅ ${m}h অর্জিত!</span>`;
+                else html += `<span class="milestone-badge">🎯 ${m}h বাকি</span>`;
             }
             milestoneMessages.innerHTML = html;
 
-            // Check new milestone
             const lastMilestone = localStorage.getItem(`lastMilestone_${currentDate}`);
             for (let m of milestones) {
                 if (total >= m && (!lastMilestone || parseInt(lastMilestone) < m)) {
@@ -1044,15 +1048,19 @@
                 const card = document.createElement('div');
                 card.className = 'hour-card';
                 card.dataset.hourIndex = i;
+                const isProductive = (data.category === 'study' || data.category === 'skill');
                 card.innerHTML = `
-                <div class="hour-header"><div class="hour-label">${formatHour(i)}</div><div style="font-size:0.7rem">${data.checked ? '✅ সমাপ্ত' : '⏳ বাকি'}</div></div>
+                <div class="hour-header">
+                    <div class="hour-label">${formatHour(i)}</div>
+                    <div style="font-size:0.7rem">${data.checked ? '✅ সমাপ্ত' : '⏳ বাকi'} ${isProductive ? '<span class="productive-badge">📈 প্রোডাক্টিভ</span>' : '<span class="productive-badge" style="background:#888;">⏸️ নন-প্রোডাক্টিভ</span>'}</div>
+                </div>
                 <div class="activity-form">
                     <input type="text" class="activity-input" placeholder="কি করলেন?" value="${escapeHtml(data.activityText)}">
                     <select class="select-category">
-                        <option value="study" ${data.category === 'study' ? 'selected' : ''}>📚 পড়া</option>
-                        <option value="sleep" ${data.category === 'sleep' ? 'selected' : ''}>😴 ঘুম</option>
-                        <option value="skill" ${data.category === 'skill' ? 'selected' : ''}>💻 স্কিল</option>
-                        <option value="other" ${data.category === 'other' ? 'selected' : ''}>🔘 অন্যান্য</option>
+                        <option value="study" ${data.category === 'study' ? 'selected' : ''}>📚 পড়া (প্রোডাক্টিভ)</option>
+                        <option value="sleep" ${data.category === 'sleep' ? 'selected' : ''}>😴 ঘুম (নন-প্রোডাক্টিভ)</option>
+                        <option value="skill" ${data.category === 'skill' ? 'selected' : ''}>💻 স্কিল (প্রোডাক্টিভ)</option>
+                        <option value="other" ${data.category === 'other' ? 'selected' : ''}>🔘 অন্যান্য (নন-প্রোডাক্টিভ)</option>
                     </select>
                     <input type="text" class="activity-input" placeholder="বিষয়/স্কিলের নাম" value="${escapeHtml(data.topic)}">
                     <div class="checkbox-row"><input type="checkbox" ${data.checked ? 'checked' : ''}> <label>এই ঘন্টা সম্পন্ন হয়েছে</label></div>
@@ -1062,14 +1070,20 @@
                 const catSelect = card.querySelector('.select-category');
                 const topicInput = card.querySelector('.activity-form input:nth-child(3)');
                 const chk = card.querySelector('.checkbox-row input');
-                const statusDiv = card.querySelector('.hour-header div:last-child');
+                const statusDiv = card.querySelector('.hour-header div:first-child + div');
 
                 actInput.addEventListener('input', (e) => { hourlyData[i].activityText = e.target.value; saveToLocalStorage(); });
-                catSelect.addEventListener('change', (e) => { hourlyData[i].category = e.target.value; saveToLocalStorage(); });
+                catSelect.addEventListener('change', (e) => {
+                    hourlyData[i].category = e.target.value;
+                    const isProd = (hourlyData[i].category === 'study' || hourlyData[i].category === 'skill');
+                    statusDiv.innerHTML = `${hourlyData[i].checked ? '✅ সমাপ্ত' : '⏳ বাকি'} ${isProd ? '<span class="productive-badge">📈 প্রোডাক্টিভ</span>' : '<span class="productive-badge" style="background:#888;">⏸️ নন-প্রোডাক্টিভ</span>'}`;
+                    saveToLocalStorage();
+                });
                 topicInput.addEventListener('input', (e) => { hourlyData[i].topic = e.target.value; saveToLocalStorage(); });
                 chk.addEventListener('change', (e) => {
                     hourlyData[i].checked = e.target.checked;
-                    statusDiv.innerText = e.target.checked ? '✅ সমাপ্ত' : '⏳ বাকি';
+                    const isProd = (hourlyData[i].category === 'study' || hourlyData[i].category === 'skill');
+                    statusDiv.innerHTML = `${e.target.checked ? '✅ সমাপ্ত' : '⏳ বাকি'} ${isProd ? '<span class="productive-badge">📈 প্রোডাক্টিভ</span>' : '<span class="productive-badge" style="background:#888;">⏸️ নন-প্রোডাক্টিভ</span>'}`;
                     saveToLocalStorage();
                     if (e.target.checked && hourlyData[i].category === 'skill') {
                         skillData.totalHours = (skillData.totalHours || 0) + 1;
@@ -1100,11 +1114,12 @@
                 Object.values(prayerData.prayers).forEach((v, idx) => { if (v) { prayerCount++; if (prayerNames[idx]) completedPrayers.push(prayerNames[idx]); } });
             }
             const remainingHours = TOTAL_HOURS - completedCount;
-            let score = (studyCount * 2) + (skillCount * 2.5) + (prayerCount * 1.5);
-            if (sleepCount >= 4 && sleepCount <= 6) score += 10;
-            else if (sleepCount > 6) score -= 5;
-            score = Math.min(100, Math.max(0, Math.round(score)));
-            return { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, productivityScore: score, studyTopicsList: studyTopics.slice(0, 4), skillTopicsList: skillTopics.slice(0, 4) };
+
+            // শুধু পড়া ও স্কিল প্রোডাক্টিভ স্কোরে যোগ হবে (ঘুম ও অন্যান্য নয়)
+            let productiveScore = (studyCount * 2) + (skillCount * 2.5) + (prayerCount * 1);
+            productiveScore = Math.min(100, Math.max(0, Math.round(productiveScore)));
+
+            return { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, productivityScore: productiveScore, studyTopicsList: studyTopics.slice(0, 4), skillTopicsList: skillTopics.slice(0, 4) };
         }
 
         function updateGoalProgress(studyHours) {
@@ -1129,22 +1144,18 @@
             let tips = [];
 
             tips.push(`⏰ <strong>আজকে এখনও ${remainingHours} ঘন্টা বাকি আছে!</strong>`);
-            tips.push(`📈 <strong>আজকের প্রোডাক্টিভিটি স্কোর: ${productivityScore}/100</strong>`);
+            tips.push(`📈 <strong>আজকের প্রোডাক্টিভিটি স্কোর: ${productivityScore}/100</strong> (শুধু পড়া ও স্কিল ডেভেলপমেন্ট থেকে গণনা)`);
 
-            // Sleep suggestions (student: 4-6 hours ideal)
             if (sleepCount < 4) tips.push(`😴 আপনি মাত্র ${sleepCount} ঘন্টা ঘুমিয়েছেন। একজন শিক্ষার্থীর জন্য ৪-৬ ঘন্টা ঘুম যথেষ্ট। আরাম করুন।`);
             else if (sleepCount >= 4 && sleepCount <= 6) tips.push(`😊 ভালো ঘুম (${sleepCount} ঘন্টা) পেয়েছেন। এটি আপনার পড়ালেখার জন্য যথেষ্ট।`);
             else if (sleepCount > 6) tips.push(`😴 আপনি ${sleepCount} ঘন্টা ঘুমিয়েছেন! শিক্ষার্থীর জন্য এটা অনেক বেশি। সময় নষ্ট হচ্ছে, এখন পড়তে বসুন!`);
 
-            // Study suggestions - 5 hours daily target
             if (studyCount < 5) tips.push(`📖 পড়ার সময় মাত্র ${studyCount} ঘন্টা। প্রতিদিন ৫ ঘন্টা পড়া আবশ্যক! এখনই পড়তে বসুন, নিজের দায়িত্ব পালন করুন, দায়িত্বের সাথে আপস করবেন না।`);
             else if (studyCount >= 5) tips.push(`🏆 অসাধারণ! আপনি ${studyCount} ঘন্টা পড়েছেন। প্রতিটি ঘন্টার জন্য আপনাকে সেরা অভিনন্দন! ধারাবাহিক থাকুন।`);
 
-            // Skill development - 4 hours daily target
             if (skillCount < 4) tips.push(`⚙️ স্কিল ডেভেলপমেন্টে মাত্র ${skillCount} ঘন্টা। প্রতিদিন ৪ ঘন্টা স্কিল ডেভেলপ করুন। ১০০০০ ঘন্টার গোলের দিকে এগিয়ে যান!`);
             else if (skillCount >= 4) tips.push(`🔥 অসাধারণ! স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন। আপনি সঠিক পথে আছেন, ১০০০০ ঘন্টার গোল পূরণ হবে ইনশাআল্লাহ!`);
 
-            // Prayer suggestions for muslim
             if (prayerData.religion === 'muslim') {
                 const requiredPrayers = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
                 let missed = requiredPrayers.filter(p => !prayerData.prayers[p]).length;
@@ -1160,7 +1171,6 @@
             const streak = calculateStreak();
             if (streak >= 7) tips.push(`🔥 আপনি ${streak} দিন ধরে একটানা ট্র্যাক করছেন! অসাধারণ ধারাবাহিকতা!`);
 
-            // 10000 hours motivation
             const skillProgress = skillData.totalHours || 0;
             const remainingSkill = 10000 - skillProgress;
             tips.push(`🎯 ১০০০০ ঘন্টা স্কিল গোল: অর্জিত ${skillProgress} ঘন্টা, বাকি ${remainingSkill} ঘন্টা। প্রতিদিন ৪ ঘন্টা করলে ${Math.ceil(remainingSkill / 4)} দিনে গোল পূরণ হবে!`);
@@ -1201,16 +1211,17 @@
             let html = '<table style="width:100%; border-collapse:collapse;">';
             html += '<tr><th>তারিখ</th><th>📖 পড়া</th><th>⚙️ স্কিল</th></tr>';
             weeklyData.forEach(day => { html += `<tr><td style="padding:8px;">${day.date}</td><td style="text-align:center;">${day.study}h</td><td style="text-align:center;">${day.skill}h</td></tr>`; });
-            html += '</table>';
+            html += '<table>';
             document.getElementById('weeklyReportContent').innerHTML = html;
             weeklyModal.style.display = 'flex';
         }
 
         function exportToCSV() {
-            let csvRows = [["ঘন্টা", "ক্যাটাগরি", "অ্যাক্টিভিটি", "টপিক", "সম্পন্ন"]];
+            let csvRows = [["ঘন্টা", "ক্যাটাগরি", "অ্যাক্টিভিটি", "টপিক", "সম্পন্ন", "প্রোডাক্টিভ?"]];
             for (let i = 0; i < hourlyData.length; i++) {
                 const d = hourlyData[i];
-                csvRows.push([`${i}:00-${i + 1}:00`, d.category, d.activityText, d.topic, d.checked ? "হ্যাঁ" : "না"]);
+                const isProductive = (d.category === 'study' || d.category === 'skill') ? "হ্যাঁ" : "না";
+                csvRows.push([`${i}:00-${i + 1}:00`, d.category, d.activityText, d.topic, d.checked ? "হ্যাঁ" : "না", isProductive]);
             }
             const blob = new Blob([csvRows.map(row => row.join(",")).join("\n")], { type: "text/csv" });
             const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `tracker_${currentDate}.csv`; link.click();
