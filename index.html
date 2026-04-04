@@ -588,6 +588,88 @@
             margin-left: 10px;
         }
 
+        /* Daily Planner Section */
+.planner-section {
+    background: var(--analytics-bg);
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border-color);
+}
+.planner-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #f9a826;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+.planner-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.planner-card {
+    background: var(--hour-card-bg);
+    border-radius: 28px;
+    padding: 18px;
+    border: 1px solid var(--border-color);
+}
+.planner-card.morning {
+    border-left: 6px solid #f9a826;
+}
+.planner-card.evening {
+    border-left: 6px solid #2c7a4d;
+}
+.planner-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+.planner-textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    resize: vertical;
+    font-family: inherit;
+}
+.planner-checkbox {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.planner-checkbox input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+.planner-stats {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: right;
+}
+.planner-tip {
+    background: #f9a82615;
+    padding: 12px;
+    border-radius: 20px;
+    margin-top: 15px;
+    font-size: 0.8rem;
+    text-align: center;
+}
+@media (max-width: 700px) {
+    .planner-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
         @keyframes fadeOut {
             0% {
                 opacity: 1;
@@ -755,6 +837,41 @@
                 <textarea id="journalInput" class="journal-textarea" rows="3"
                     placeholder="আজকের দিনটি কেমন গেল? কী শিখলেন? কী সমস্যা হলো?"></textarea>
                 <div style="font-size:0.7rem; margin-top:8px;" id="journalStats">0 অক্ষর | শেষ সংরক্ষণ: --</div>
+            </div>
+
+            <!-- daily routine  -->
+            <!-- Daily Planner Section -->
+            <div class="planner-section">
+                <div class="planner-title">
+                    📋 ডেইলি প্ল্যানার
+                    <span style="font-size: 0.8rem; background: #f9a82620; padding: 5px 12px; border-radius: 30px;">🌅 সকালে
+                        পরিকল্পনা করুন | 🌙 রাতে মূল্যায়ন করুন</span>
+                </div>
+                <div class="planner-grid">
+                    <!-- Morning Plan Card -->
+                    <div class="planner-card morning">
+                        <h3>🌅 আজকের পরিকল্পনা (সকালে লিখুন)</h3>
+                        <textarea id="morningPlan" class="planner-textarea" rows="4"
+                            placeholder="আজকে কী কী করবেন?&#10;📖 পড়া: _____&#10;💻 স্কিল: _____&#10;🕌 ইবাদত: _____&#10;🏃 ব্যায়াম: _____&#10;📝 অন্যান্য: _____"></textarea>
+                        <div class="planner-stats" id="morningPlanStats">0 অক্ষর | শেষ আপডেট: --</div>
+                    </div>
+            
+                    <!-- Evening Check Card -->
+                    <div class="planner-card evening">
+                        <h3>🌙 দিনশেষে মূল্যায়ন</h3>
+                        <textarea id="eveningReflection" class="planner-textarea" rows="4"
+                            placeholder="আজকের দিন কেমন গেল?&#10;✅ কী কী করতে পেরেছেন?&#10;❌ কী কী বাকি রইল?&#10;💡 আগামীকালের জন্য শিক্ষা:"></textarea>
+                        <div class="planner-checkbox">
+                            <input type="checkbox" id="dailyCompleteCheck">
+                            <label for="dailyCompleteCheck">✅ আজকের সব পরিকল্পনা সম্পন্ন হয়েছে</label>
+                        </div>
+                        <div class="planner-stats" id="eveningPlanStats">0 অক্ষর | শেষ আপডেট: --</div>
+                    </div>
+                </div>
+                <div class="planner-tip">
+                    💡 <strong>টিপ:</strong> রাতে ঘুমানোর আগে ৫ মিনিট সময় নিয়ে আগামীকালের পরিকল্পনা করুন। সকালে ঘুম থেকে উঠে
+                    পরিকল্পনা দেখে কাজ শুরু করুন। এতে আপনার প্রোডাক্টিভিটি ২ গুণ বাড়বে!
+                </div>
             </div>
 
             <div id="suggestionArea" class="suggestion-box">
@@ -1011,6 +1128,7 @@
             highlightCurrentHourCard();
             updateStreakDisplay();
             updateRemainingHours();
+            loadPlannerData();
         }
 
         function initDarkMode() {
@@ -1224,6 +1342,49 @@
             weeklyModal.style.display = 'flex';
         }
 
+        // ============= Daily Planner Functions =============
+            function loadPlannerData() {
+                const savedMorning = localStorage.getItem(`morningPlan_${currentDate}`);
+                const savedEvening = localStorage.getItem(`eveningReflection_${currentDate}`);
+                const savedCheck = localStorage.getItem(`dailyComplete_${currentDate}`);
+
+                if (savedMorning) document.getElementById('morningPlan').value = savedMorning;
+                if (savedEvening) document.getElementById('eveningReflection').value = savedEvening;
+                if (savedCheck) document.getElementById('dailyCompleteCheck').checked = savedCheck === 'true';
+
+                updatePlannerStats();
+            }
+
+            function savePlannerData() {
+                const morningPlan = document.getElementById('morningPlan').value;
+                const eveningReflection = document.getElementById('eveningReflection').value;
+                const dailyComplete = document.getElementById('dailyCompleteCheck').checked;
+
+                localStorage.setItem(`morningPlan_${currentDate}`, morningPlan);
+                localStorage.setItem(`eveningReflection_${currentDate}`, eveningReflection);
+                localStorage.setItem(`dailyComplete_${currentDate}`, dailyComplete);
+
+                updatePlannerStats();
+
+                const alreadyCelebrated = localStorage.getItem(`plannerCelebrated_${currentDate}`);
+                if (dailyComplete && !alreadyCelebrated) {
+                    showConfettiMessage("🎉 চমৎকার! আজকের সব পরিকল্পনা সম্পন্ন করেছেন! 🎉");
+                    localStorage.setItem(`plannerCelebrated_${currentDate}`, 'true');
+                }
+            }
+
+            function updatePlannerStats() {
+                const morningLength = document.getElementById('morningPlan')?.value.length || 0;
+                const eveningLength = document.getElementById('eveningReflection')?.value.length || 0;
+                const lastMorningSave = localStorage.getItem(`morningPlan_lastSave_${currentDate}`) || 'কখনও না';
+                const lastEveningSave = localStorage.getItem(`eveningReflection_lastSave_${currentDate}`) || 'কখনও না';
+
+                const morningStats = document.getElementById('morningPlanStats');
+                const eveningStats = document.getElementById('eveningPlanStats');
+                if (morningStats) morningStats.innerHTML = `${morningLength} অক্ষর | শেষ আপডেট: ${lastMorningSave}`;
+                if (eveningStats) eveningStats.innerHTML = `${eveningLength} অক্ষর | শেষ আপডেট: ${lastEveningSave}`;
+            }
+
 
         // Monthly added 
         
@@ -1339,9 +1500,45 @@
                 monthlyReportBtn.addEventListener('click', showMonthlyReport);
             };
 
+            // Daily Planner Event Listeners
+                const morningPlan = document.getElementById('morningPlan');
+                const eveningReflection = document.getElementById('eveningReflection');
+                const dailyCompleteCheck = document.getElementById('dailyCompleteCheck');
+
+                if (morningPlan) {
+                    morningPlan.addEventListener('input', () => {
+                        const now = new Date().toLocaleTimeString();
+                        localStorage.setItem(`morningPlan_${currentDate}`, morningPlan.value);
+                        localStorage.setItem(`morningPlan_lastSave_${currentDate}`, now);
+                        updatePlannerStats();
+                    });
+                }
+
+                if (eveningReflection) {
+                    eveningReflection.addEventListener('input', () => {
+                        const now = new Date().toLocaleTimeString();
+                        localStorage.setItem(`eveningReflection_${currentDate}`, eveningReflection.value);
+                        localStorage.setItem(`eveningReflection_lastSave_${currentDate}`, now);
+                        updatePlannerStats();
+                    });
+                }
+
+                if (dailyCompleteCheck) {
+                    dailyCompleteCheck.addEventListener('change', () => {
+                        savePlannerData();
+                    });
+                };
+
+
+
         function init() {
             currentDate = getTodayString(); datePicker.value = currentDate;
-            hourlyData = loadFromLocalStorage(currentDate); loadGoal(); loadJournal(); loadPrayerData(); loadSkillData();
+            hourlyData = loadFromLocalStorage(currentDate); 
+            loadGoal(); 
+            loadJournal();
+             loadPrayerData(); 
+             loadSkillData();
+             loadPlannerData();
             renderAllHours(); updateAnalyticsAndChart(); startRealTimeClock(); initDarkMode(); updateStreakDisplay(); updateRemainingHours();
         }
         init();
