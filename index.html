@@ -320,7 +320,7 @@
 
         .stat-cards {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
 
@@ -815,6 +815,11 @@
                         <div class="stat-number" id="productivityScore">0</div>
                         <div><small style="font-size:10px;">শুধু পড়া+স্কিল</small></div>
                     </div>
+                    <div class="stat-card">
+                        <h3>⚠️ সময় নষ্ট</h3>
+                        <div class="stat-number" id="wastedHours">0</div>
+                        <div><small style="font-size:10px;">ফোন/হাবিজাবি</small></div>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <canvas id="activityChart" width="200" height="200"></canvas>
@@ -827,6 +832,8 @@
                     <button class="filter-btn" data-filter="study">📖 পড়া</button>
                     <button class="filter-btn" data-filter="sleep">😴 ঘুম</button>
                     <button class="filter-btn" data-filter="skill">⚙️ স্কিল</button>
+                    <button class="filter-btn" data-filter="exercise">🏃 ব্যায়াম</button>
+                    <button class="filter-btn" data-filter="wasted">⚠️ সময় নষ্ট</button>
                     <button class="filter-btn" data-filter="other">🔘 অন্যান্য</button>
                 </div>
                 <div><span class="remaining-badge" id="remainingHoursBadge">⏰ বাকি: 24 ঘন্টা</span></div>
@@ -938,6 +945,7 @@
         const skillTopicName = document.getElementById('skillTopicName');
         const dailySkillLog = document.getElementById('dailySkillLog');
         const weeklyModal = document.getElementById('weeklyModal');
+        const wastedHoursSpan = document.getElementById('wastedHours');
 
         function getTodayString() {
             const d = new Date();
@@ -1183,11 +1191,15 @@
                 <div class="activity-form">
                     <input type="text" class="activity-input" placeholder="কি করলেন?" value="${escapeHtml(data.activityText)}">
                     <select class="select-category">
-                        <option value="study" ${data.category === 'study' ? 'selected' : ''}>📚 পড়া (প্রোডাক্টিভ)</option>
-                        <option value="sleep" ${data.category === 'sleep' ? 'selected' : ''}>😴 ঘুম (নন-প্রোডাক্টিভ)</option>
-                        <option value="skill" ${data.category === 'skill' ? 'selected' : ''}>💻 স্কিল (প্রোডাক্টিভ)</option>
-                        <option value="other" ${data.category === 'other' ? 'selected' : ''}>🔘 অন্যান্য (নন-প্রোডাক্টিভ)</option>
-                    </select>
+    <option value="study" ${data.category === 'study' ? 'selected' : ''}>📚 পড়া (প্রোডাক্টিভ)</option>
+    <option value="sleep" ${data.category === 'sleep' ? 'selected' : ''}>😴 ঘুম (নন-প্রোডাক্টিভ)</option>
+    <option value="skill" ${data.category === 'skill' ? 'selected' : ''}>💻 স্কিল ডেভেলপমেন্ট (প্রোডাক্টিভ)</option>
+    <option value="exercise" ${data.category === 'exercise' ? 'selected' : ''}>🏃 ব্যায়াম/যোগব্যায়াম (প্রোডাক্টিভ)</option>
+    <option value="food" ${data.category === 'food' ? 'selected' : ''}>🍽️ খাবার/বিশ্রাম (নিউট্রাল)</option>
+    <option value="wasted" ${data.category === 'wasted' ? 'selected' : ''}>📱 সময় নষ্ট - ফোন/হাবিজাবি (নন-প্রোডাক্টিভ) ⚠️</option>
+    <option value="thinking" ${data.category === 'thinking' ? 'selected' : ''}>💭 ভাবনা/পরিকল্পনা (নিউট্রাল)</option>
+    <option value="other" ${data.category === 'other' ? 'selected' : ''}>🔘 অন্যান্য (নিউট্রাল)</option>
+</select>
                     <input type="text" class="activity-input" placeholder="বিষয়/স্কিলের নাম" value="${escapeHtml(data.topic)}">
                     <div class="checkbox-row"><input type="checkbox" ${data.checked ? 'checked' : ''}> <label>এই ঘন্টা সম্পন্ন হয়েছে</label></div>
                 </div>
@@ -1224,69 +1236,126 @@
             highlightCurrentHourCard();
         }
 
-        function computeAnalytics() {
-            let studyCount = 0, sleepCount = 0, skillCount = 0, completedCount = 0;
+      function computeAnalytics() {
+            let studyCount = 0, sleepCount = 0, skillCount = 0, exerciseCount = 0;
+            let wastedCount = 0, foodCount = 0, thinkingCount = 0, otherCount = 0;
+            let completedCount = 0;
             let studyTopics = [], skillTopics = [];
+
             for (let entry of hourlyData) {
                 if (entry.checked) completedCount++;
-                if (entry.category === 'study') { studyCount++; if (entry.topic?.trim()) studyTopics.push(entry.topic.trim()); }
+                if (entry.category === 'study') {
+                    studyCount++;
+                    if (entry.topic?.trim()) studyTopics.push(entry.topic.trim());
+                }
                 else if (entry.category === 'sleep') sleepCount++;
-                else if (entry.category === 'skill') { skillCount++; if (entry.topic?.trim()) skillTopics.push(entry.topic.trim()); }
+                else if (entry.category === 'skill') {
+                    skillCount++;
+                    if (entry.topic?.trim()) skillTopics.push(entry.topic.trim());
+                }
+                else if (entry.category === 'exercise') exerciseCount++;
+                else if (entry.category === 'wasted') wastedCount++;
+                else if (entry.category === 'food') foodCount++;
+                else if (entry.category === 'thinking') thinkingCount++;
+                else otherCount++;
             }
+
             let prayerCount = 0;
             let completedPrayers = [];
             if (prayerData.prayers) {
                 const prayerNames = getPrayerNames(prayerData.religion);
-                Object.values(prayerData.prayers).forEach((v, idx) => { if (v) { prayerCount++; if (prayerNames[idx]) completedPrayers.push(prayerNames[idx]); } });
+                Object.values(prayerData.prayers).forEach((v, idx) => {
+                    if (v) {
+                        prayerCount++;
+                        if (prayerNames[idx]) completedPrayers.push(prayerNames[idx]);
+                    }
+                });
             }
-            const remainingHours = TOTAL_HOURS - completedCount;
 
-            // শুধু পড়া ও স্কিল প্রোডাক্টিভ স্কোরে যোগ হবে (ঘুম ও অন্যান্য নয়)
-            let productiveScore = (studyCount * 2) + (skillCount * 2.5) + (prayerCount * 1);
+            const remainingHours = TOTAL_HOURS - completedCount;
+            let productiveScore = (studyCount * 2) + (skillCount * 2.5) + (exerciseCount * 1.5) + (prayerCount * 1);
             productiveScore = Math.min(100, Math.max(0, Math.round(productiveScore)));
 
-            return { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, productivityScore: productiveScore, studyTopicsList: studyTopics.slice(0, 4), skillTopicsList: skillTopics.slice(0, 4) };
+            // গুরুত্বপূর্ণ: wastedCount এবং thinkingCount রিটার্ন করতে হবে!
+            return {
+                studyCount, sleepCount, skillCount, exerciseCount, wastedCount, foodCount, thinkingCount,
+                completedCount, remainingHours, prayerCount, completedPrayers,
+                productivityScore: productiveScore,
+                studyTopicsList: studyTopics.slice(0, 4),
+                skillTopicsList: skillTopics.slice(0, 4)
+            };
         }
-
+        
+        
         function updateGoalProgress(studyHours) {
             const goal = parseFloat(dailyGoalInput.value) || 5;
             const percent = Math.min(100, (studyHours / goal) * 100);
             goalFill.style.width = `${percent}%`;
             goalStatusText.innerText = `অগ্রগতি: ${studyHours}/${goal} ঘন্টা (${Math.round(percent)}%)`;
         }
+    function updateChart(study, sleep, skill, exercise) {
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        if (activityChart) activityChart.destroy();
+        activityChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['পড়া 📖', 'ঘুম 😴', 'স্কিল 💻', 'ব্যায়াম 🏃', 'অন্যান্য'],
+                datasets: [{
+                    data: [study, sleep, skill, exercise, Math.max(0, 24 - (study + sleep + skill + exercise))],
+                    backgroundColor: ['#f9a826', '#2c7a4d', '#1f4e6e', '#6b21a5', '#b0b0b0']
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 } } } } }
+        });
+    }
 
-        function updateChart(study, sleep, skill) {
-            const ctx = document.getElementById('activityChart').getContext('2d');
-            if (activityChart) activityChart.destroy();
-            activityChart = new Chart(ctx, {
-                type: 'pie',
-                data: { labels: ['পড়া 📖', 'ঘুম 😴', 'স্কিল 💻', 'অন্যান্য'], datasets: [{ data: [study, sleep, skill, Math.max(0, 24 - (study + sleep + skill))], backgroundColor: ['#f9a826', '#2c7a4d', '#1f4e6e', '#b0b0b0'] }] },
-                options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
-            });
-        }
 
-        function generateDetailedSuggestions(analytics) {
-            const { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, studyTopicsList, skillTopicsList, productivityScore } = analytics;
+       function generateDetailedSuggestions(analytics) {
+            const { studyCount, sleepCount, skillCount, exerciseCount, wastedCount, thinkingCount,
+                completedCount, remainingHours, prayerCount, completedPrayers,
+                studyTopicsList, skillTopicsList, productivityScore } = analytics;
             let tips = [];
 
             tips.push(`⏰ <strong>আজকে এখনও ${remainingHours} ঘন্টা বাকি আছে!</strong>`);
-            tips.push(`📈 <strong>আজকের প্রোডাক্টিভিটি স্কোর: ${productivityScore}/100</strong> (শুধু পড়া ও স্কিল ডেভেলপমেন্ট থেকে গণনা)`);
+            tips.push(`📈 <strong>আজকের প্রোডাক্টিভিটি স্কোর: ${productivityScore}/100</strong> (পড়া + স্কিল + ব্যায়াম + ইবাদত)`);
 
+            // ঘুম সম্পর্কিত সাজেশন
             if (sleepCount < 4) tips.push(`😴 আপনি মাত্র ${sleepCount} ঘন্টা ঘুমিয়েছেন। একজন শিক্ষার্থীর জন্য ৪-৬ ঘন্টা ঘুম যথেষ্ট। আরাম করুন।`);
             else if (sleepCount >= 4 && sleepCount <= 6) tips.push(`😊 ভালো ঘুম (${sleepCount} ঘন্টা) পেয়েছেন। এটি আপনার পড়ালেখার জন্য যথেষ্ট।`);
             else if (sleepCount > 6) tips.push(`😴 আপনি ${sleepCount} ঘন্টা ঘুমিয়েছেন! শিক্ষার্থীর জন্য এটা অনেক বেশি। সময় নষ্ট হচ্ছে, এখন পড়তে বসুন!`);
 
+            // পড়া সম্পর্কিত সাজেশন
             if (studyCount < 5) tips.push(`📖 পড়ার সময় মাত্র ${studyCount} ঘন্টা। প্রতিদিন ৫ ঘন্টা পড়া আবশ্যক! এখনই পড়তে বসুন, নিজের দায়িত্ব পালন করুন, দায়িত্বের সাথে আপস করবেন না।`);
             else if (studyCount >= 5) tips.push(`🏆 অসাধারণ! আপনি ${studyCount} ঘন্টা পড়েছেন। প্রতিটি ঘন্টার জন্য আপনাকে সেরা অভিনন্দন! ধারাবাহিক থাকুন।`);
 
+            // স্কিল ডেভেলপমেন্ট
             if (skillCount < 4) tips.push(`⚙️ স্কিল ডেভেলপমেন্টে মাত্র ${skillCount} ঘন্টা। প্রতিদিন ৪ ঘন্টা স্কিল ডেভেলপ করুন। ১০০০০ ঘন্টার গোলের দিকে এগিয়ে যান!`);
-            else if (skillCount >= 4) tips.push(`🔥 অসাধারণ! স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন। আপনি সঠিক পথে আছেন, ১০০০০ ঘন্টার গোল পূরণ হবে ইনশাআল্লাহ!`);
+            else if (skillCount >= 4) tips.push(`🔥 অসাধারণ! স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন। আপনি সঠিক পথে আছেন, ১০০০০ ঘন্টার গোল পূরণ হবে!`);
 
+            // ব্যায়াম
+            if (exerciseCount === 0) tips.push(`🏃 আজ ব্যায়াম করেননি। শরীর ও মনের জন্য ৩০ মিনিট ব্যায়াম জরুরি।`);
+            else if (exerciseCount >= 1) tips.push(`💪 ভালো! আপনি ${exerciseCount} ঘন্টা ব্যায়াম করেছেন। সুস্থ থাকুন, ভালো পড়ুন!`);
+
+            // টাইম ওয়েস্ট সতর্কতা (এখানেই সমস্যা ছিল)
+            if (wastedCount > 0) {
+                tips.push(`⚠️ <strong style="color:#ff6b35;">সতর্কতা:</strong> আপনি আজ ${wastedCount} ঘন্টা সময় নষ্ট করেছেন! ফোন দেখা, হাবিজাবি বা অযথা ভাবনায় সময় দিয়েছেন। এই সময়টা পড়া বা স্কিল ডেভেলপমেন্টে দিতে পারতেন। আগামীকাল থেকে সতর্ক হোন!`);
+
+                if (wastedCount >= 3) {
+                    tips.push(`🔴 <strong>গুরুতর সতর্কতা:</strong> ${wastedCount} ঘন্টা সময় নষ্ট! এটি আপনার ভবিষ্যতের জন্য ক্ষতিকর। আজই সিদ্ধান্ত নিন, কাল থেকে সময়ের সঠিক ব্যবহার করবেন।`);
+                }
+            }
+
+            // ভাবনা সম্পর্কিত
+            if (thinkingCount > 0 && wastedCount > 0) {
+                tips.push(`💭 ভাবনা ও পরিকল্পনা ভালো, কিন্তু অতিরিক্ত ভাবনা সময় নষ্ট করে দেয়। নির্দিষ্ট সময়ে ভাবুন, তারপর কাজ করুন।`);
+            }
+
+            // ইবাদত
             if (prayerData.religion === 'muslim') {
                 const requiredPrayers = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
                 let missed = requiredPrayers.filter(p => !prayerData.prayers[p]).length;
-                if (missed > 0) tips.push(`🕌 আপনি ${5 - missed} ওয়াক্ত নামাজ পড়েছেন, ${missed} ওয়াক্ত বাকি। নামাজ ছাড়বেন না, এটা আপনার সাফল্যের চাবি। কুরআন তিলাওয়াত করুন, এক আয়াত হলেও।`);
-                else if (missed === 0) tips.push(`🕌 চমৎকার! সব ৫ ওয়াক্ত নামাজ পড়েছেন। কুরআন তিলাওয়াত চালিয়ে যান। আল্লাহ আপনার মেধা বৃদ্ধি করুন।`);
+                if (missed > 0) tips.push(`🕌 আপনি ${5 - missed} ওয়াক্ত নামাজ পড়েছেন, ${missed} ওয়াক্ত বাকি। নামাজ ছাড়বেন না, এটা আপনার সাফল্যের চাবি।`);
+                else if (missed === 0) tips.push(`🕌 চমৎকার! সব ৫ ওয়াক্ত নামাজ পড়েছেন। কুরআন তিলাওয়াত চালিয়ে যান।`);
                 if (prayerData.quranPage) tips.push(`📖 কুরআন তিলাওয়াত করেছেন - পৃষ্ঠা ${prayerData.quranPage}. চালিয়ে যান!`);
             }
 
@@ -1303,7 +1372,9 @@
 
             return tips.map(tip => `• ${tip}`).join('<br>');
         }
-
+       
+       
+       
         function updateAnalyticsAndChart() {
             const analytics = computeAnalytics();
             studyHoursSpan.innerText = analytics.studyCount;
@@ -1311,11 +1382,12 @@
             skillHoursSpan.innerText = analytics.skillCount;
             completedHoursSpan.innerText = analytics.completedCount;
             prayerCountSpan.innerText = analytics.prayerCount;
+            wastedHoursSpan.innerText = analytics.wastedCount;
             productivityScoreSpan.innerText = analytics.productivityScore;
             prayerDetailsSpan.innerHTML = analytics.completedPrayers.length ? analytics.completedPrayers.slice(0, 3).join(', ') : '-';
             studyTopicsListDiv.innerHTML = analytics.studyTopicsList.length ? analytics.studyTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('') : '-';
             skillTopicsListDiv.innerHTML = analytics.skillTopicsList.length ? analytics.skillTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('') : '-';
-            updateChart(analytics.studyCount, analytics.sleepCount, analytics.skillCount);
+            updateChart(analytics.studyCount, analytics.sleepCount, analytics.skillCount, analytics.exerciseCount);
             updateGoalProgress(analytics.studyCount);
             suggestionText.innerHTML = generateDetailedSuggestions(analytics);
             updateRemainingHours();
