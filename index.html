@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>সম্পূর্ণ ট্র্যাকার | নামাজ + বিস্তারিত সাজেশন (আগের স্টাইলে)</title>
+    <title>পারফেক্ট ট্র্যাকার | ১০০০০ ঘন্টা গোল + স্মার্ট সাজেশন</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -29,6 +29,7 @@
             --hour-card-bg: white;
             --hour-header-bg: #f5f0e6;
             --prayer-bg: #e8f5e9;
+            --streak-bg: linear-gradient(135deg, #f9a826, #ff6b35);
         }
 
         body.dark-mode {
@@ -55,7 +56,7 @@
         }
 
         .dashboard {
-            max-width: 1500px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -93,6 +94,22 @@
             font-weight: bold;
         }
 
+        .streak-card {
+            background: var(--streak-bg);
+            padding: 12px 24px;
+            border-radius: 60px;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .streak-number {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
         .date-bar {
             display: flex;
             flex-wrap: wrap;
@@ -114,7 +131,8 @@
         input[type="date"],
         .goal-input,
         .dark-mode-toggle,
-        .religion-select {
+        .religion-select,
+        .filter-select {
             padding: 8px 16px;
             border-radius: 30px;
             border: none;
@@ -122,7 +140,8 @@
             cursor: pointer;
         }
 
-        .religion-select {
+        .religion-select,
+        .filter-select {
             background: #f9a826;
             color: #0f2b3d;
         }
@@ -142,7 +161,8 @@
 
         .today-btn,
         .reset-btn,
-        .export-btn {
+        .export-btn,
+        .weekly-report-btn {
             border: none;
             padding: 6px 18px;
             border-radius: 30px;
@@ -161,6 +181,11 @@
 
         .export-btn {
             background: #2c7a4d;
+            color: white;
+        }
+
+        .weekly-report-btn {
+            background: #1f4e6e;
             color: white;
         }
 
@@ -230,6 +255,59 @@
             border: 1px solid var(--border-color);
             background: var(--input-bg);
             color: var(--text-primary);
+        }
+
+        /* 10000 Hours Goal Section */
+        .tenk-hours-section {
+            background: var(--analytics-bg);
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tenk-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #f9a826;
+        }
+
+        .skill-goal-card {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .skill-progress {
+            flex: 2;
+            background: var(--hour-card-bg);
+            border-radius: 20px;
+            padding: 15px;
+        }
+
+        .skill-progress-bar {
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 30px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .skill-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f9a826, #ff6b35);
+            width: 0%;
+            transition: width 0.5s;
+            border-radius: 30px;
+        }
+
+        .milestone-badge {
+            background: #f9a82620;
+            padding: 5px 12px;
+            border-radius: 30px;
+            margin: 5px;
+            display: inline-block;
+            font-size: 0.75rem;
         }
 
         .analytics-row {
@@ -354,8 +432,36 @@
             font-size: 0.95rem;
         }
 
-        .suggestion-text strong {
-            color: #f9a826;
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 28px;
+            background: var(--analytics-bg);
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            background: var(--hour-card-bg);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .filter-btn.active {
+            background: #f9a826;
+            color: white;
+            border-color: #f9a826;
         }
 
         .hours-grid {
@@ -418,6 +524,40 @@
             font-size: 0.7rem;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
         .confetti-message {
             position: fixed;
             bottom: 20px;
@@ -429,6 +569,15 @@
             font-weight: bold;
             animation: fadeOut 3s forwards;
             z-index: 1000;
+        }
+
+        .remaining-badge {
+            background: #f9a826;
+            color: #0f2b3d;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: bold;
+            margin-left: 15px;
         }
 
         @keyframes fadeOut {
@@ -471,8 +620,10 @@
         <div class="tracker-card">
             <div class="header">
                 <h1>
-                    📊 ২৪ ঘণ্টার স্মার্ট ট্র্যাকার
-                    <div style="display: flex; gap: 10px;">
+                    📊 ২৪ ঘণ্টার পারফেক্ট ট্র্যাকার
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div class="streak-card" id="streakCard">🔥 <span class="streak-number"
+                                id="streakCount">0</span> দিন স্ট্রেক</div>
                         <span class="live-clock" id="liveClock">--:--:--</span>
                         <button class="dark-mode-toggle" id="darkModeToggle">🌙 ডার্ক মোড</button>
                     </div>
@@ -484,20 +635,44 @@
                         <button id="todayBtn" class="today-btn">আজ</button>
                         <button id="resetDateBtn" class="reset-btn">🗑️ রিসেট</button>
                         <button id="exportCsvBtn" class="export-btn">📥 CSV</button>
+                        <button id="weeklyReportBtn" class="weekly-report-btn">📊 সাপ্তাহিক রিপোর্ট</button>
                     </div>
                     <div class="goal-section">
                         <label>🎯 দৈনিক পড়ার লক্ষ্য (ঘন্টা):</label>
                         <input type="number" id="dailyGoalInput" class="goal-input" min="0" max="24" step="0.5"
-                            value="3">
+                            value="5">
                         <div class="goal-progress">
                             <div class="goal-fill" id="goalFill"></div>
                         </div>
-                        <div id="goalStatusText">অগ্রগতি: 0/3 ঘন্টা</div>
+                        <div id="goalStatusText">অগ্রগতি: 0/5 ঘন্টা</div>
                     </div>
                 </div>
             </div>
 
-            <!-- নামাজ / ইবাদত সেকশন -->
+            <!-- 10000 Hours Goal Section -->
+            <div class="tenk-hours-section">
+                <div class="tenk-title">🎯 ১০,০০০ ঘন্টা স্কিল ডেভেলপমেন্ট গোল</div>
+                <div class="skill-goal-card">
+                    <div class="skill-progress">
+                        <div><strong>বর্তমান স্কিল টপিক:</strong> <input type="text" id="skillTopicName"
+                                placeholder="যে স্কিল শিখছেন (যেমন: Web Development)"
+                                style="padding:5px 10px; border-radius:20px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-primary); width:200px;">
+                        </div>
+                        <div class="skill-progress-bar">
+                            <div class="skill-fill" id="skillFill"></div>
+                        </div>
+                        <div><span id="skillHoursDisplay">0</span> / 10000 ঘন্টা (<span id="skillPercent">0</span>%)
+                        </div>
+                        <div id="milestoneMessages" style="margin-top:10px;"></div>
+                    </div>
+                </div>
+                <div style="margin-top:10px;">
+                    <input type="text" id="dailySkillLog"
+                        placeholder="আজকে স্কিল ডেভেলপমেন্টে কী শিখলেন? (যেমন: React Hooks)"
+                        style="width:100%; padding:10px; border-radius:30px; border:1px solid var(--border-color); background:var(--input-bg);">
+                </div>
+            </div>
+
             <div class="prayer-section" id="prayerSection">
                 <div class="prayer-title">
                     🕌 ধর্মীয় ইবাদত ট্র্যাকার
@@ -537,16 +712,32 @@
                         <div class="stat-number" id="completedHours">0</div>
                         <div>মোট ২৪ ঘন্টা</div>
                     </div>
+                    <div class="stat-card">
+                        <h3>📈 স্কোর</h3>
+                        <div class="stat-number" id="productivityScore">0</div>
+                        <div>/100</div>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <canvas id="activityChart" width="200" height="200"></canvas>
                 </div>
             </div>
 
+            <div class="filter-bar">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">📋 সব</button>
+                    <button class="filter-btn" data-filter="study">📖 পড়া</button>
+                    <button class="filter-btn" data-filter="sleep">😴 ঘুম</button>
+                    <button class="filter-btn" data-filter="skill">⚙️ স্কিল</button>
+                    <button class="filter-btn" data-filter="other">🔘 অন্যান্য</button>
+                </div>
+                <div><span class="remaining-badge" id="remainingHoursBadge">⏰ বাকি: 24 ঘন্টা</span></div>
+            </div>
+
             <div class="journal-section">
                 <div class="journal-title">📔 দৈনিক জার্নাল / নোট</div>
                 <textarea id="journalInput" class="journal-textarea" rows="3"
-                    placeholder="আজকের দিনটি কেমন গেল? কী শিখলেন? কী সমস্যা হলো? আগামীকালের জন্য পরিকল্পনা..."></textarea>
+                    placeholder="আজকের দিনটি কেমন গেল? কী শিখলেন? কী সমস্যা হলো?"></textarea>
                 <div style="font-size:0.7rem; margin-top:8px;" id="journalStats">0 অক্ষর | শেষ সংরক্ষণ: --</div>
             </div>
 
@@ -556,8 +747,16 @@
             </div>
 
             <div id="hoursContainer" class="hours-grid"></div>
-            <div class="footer-note">✅ রিয়েল টাইম ঘড়ি + গ্রাফ + লক্ষ্য + CSV + জার্নাল + ডার্ক মোড + ইবাদত ট্র্যাকার +
-                ৫টি স্ট্যাটাস কার্ড + বিস্তারিত সাজেশন</div>
+            <div class="footer-note">✅ অটো আপডেট বাকি ঘন্টা + স্মার্ট সাজেশন + ১০০০০ ঘন্টা গোল + নামাজ ট্র্যাকার</div>
+        </div>
+    </div>
+
+    <div id="weeklyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 সাপ্তাহিক রিপোর্ট</h2><span class="close-modal">&times;</span>
+            </div>
+            <div id="weeklyReportContent"></div>
         </div>
     </div>
 
@@ -566,12 +765,16 @@
         let currentDate = getTodayString();
         let hourlyData = [];
         let prayerData = { religion: 'muslim', prayers: {}, quranPage: '', quranJuz: '' };
+        let skillData = { totalHours: 0, topic: '', dailyLogs: [], milestones: [] };
         let activityChart = null;
+        let currentFilter = 'all';
 
+        // DOM Elements
         const datePicker = document.getElementById('datePicker');
         const todayBtn = document.getElementById('todayBtn');
         const resetDateBtn = document.getElementById('resetDateBtn');
         const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const weeklyReportBtn = document.getElementById('weeklyReportBtn');
         const hoursContainer = document.getElementById('hoursContainer');
         const studyHoursSpan = document.getElementById('studyHours');
         const sleepHoursSpan = document.getElementById('sleepHours');
@@ -579,6 +782,7 @@
         const completedHoursSpan = document.getElementById('completedHours');
         const prayerCountSpan = document.getElementById('prayerCount');
         const prayerDetailsSpan = document.getElementById('prayerDetails');
+        const productivityScoreSpan = document.getElementById('productivityScore');
         const studyTopicsListDiv = document.getElementById('studyTopicsList');
         const skillTopicsListDiv = document.getElementById('skillTopicsList');
         const suggestionText = document.getElementById('suggestionText');
@@ -591,6 +795,15 @@
         const darkModeToggle = document.getElementById('darkModeToggle');
         const religionSelect = document.getElementById('religionSelect');
         const prayerContent = document.getElementById('prayerContent');
+        const streakCountSpan = document.getElementById('streakCount');
+        const remainingHoursBadge = document.getElementById('remainingHoursBadge');
+        const skillFill = document.getElementById('skillFill');
+        const skillHoursDisplay = document.getElementById('skillHoursDisplay');
+        const skillPercent = document.getElementById('skillPercent');
+        const milestoneMessages = document.getElementById('milestoneMessages');
+        const skillTopicName = document.getElementById('skillTopicName');
+        const dailySkillLog = document.getElementById('dailySkillLog');
+        const weeklyModal = document.getElementById('weeklyModal');
 
         function getTodayString() {
             const d = new Date();
@@ -609,18 +822,12 @@
 
         function getPrayerNames(religion) {
             if (religion === 'muslim') return ['ফজর', 'যোহর', 'আসর', 'মাগরিব', 'ইশা', 'তাহাজ্জুদ'];
-            if (religion === 'hindu') return ['পূজা', 'মন্ত্র জপ', 'মন্দির', 'ধ্যান'];
-            if (religion === 'christian') return ['প্রার্থনা', 'বাইবেল', 'গির্জা', 'উপাসনা'];
             return ['আধ্যাত্মিক চর্চা'];
         }
 
         function getDefaultPrayerData(religion) {
             if (religion === 'muslim') {
                 return { prayers: { fajr: false, zuhr: false, asr: false, maghrib: false, isha: false, tahajjud: false }, quranPage: '', quranJuz: '' };
-            } else if (religion === 'hindu') {
-                return { prayers: { puja: false, mantra: false, temple: false, meditation: false }, quranPage: '', quranJuz: '' };
-            } else if (religion === 'christian') {
-                return { prayers: { prayer: false, bible: false, church: false, worship: false }, quranPage: '', quranJuz: '' };
             }
             return { prayers: { spiritual: false }, quranPage: '', quranJuz: '' };
         }
@@ -630,8 +837,64 @@
             localStorage.setItem(`goal_${currentDate}`, dailyGoalInput.value);
             localStorage.setItem(`journal_${currentDate}`, journalInput.value);
             localStorage.setItem(`prayer_${currentDate}`, JSON.stringify(prayerData));
+            localStorage.setItem(`skillData_${currentDate}`, JSON.stringify(skillData));
             updateAnalyticsAndChart();
             updateJournalStats();
+            updateStreakDisplay();
+            updateRemainingHours();
+            updateSkillDisplay();
+        }
+
+        function loadSkillData() {
+            const saved = localStorage.getItem(`skillData_${currentDate}`);
+            if (saved) {
+                try {
+                    skillData = JSON.parse(saved);
+                    skillTopicName.value = skillData.topic || '';
+                    dailySkillLog.value = skillData.dailyLogs?.slice(-1)[0] || '';
+                } catch (e) { skillData = { totalHours: 0, topic: '', dailyLogs: [], milestones: [] }; }
+            } else {
+                skillData = { totalHours: 0, topic: '', dailyLogs: [], milestones: [] };
+            }
+            updateSkillDisplay();
+        }
+
+        function updateSkillDisplay() {
+            const total = skillData.totalHours || 0;
+            const percent = Math.min(100, (total / 10000) * 100);
+            skillFill.style.width = `${percent}%`;
+            skillHoursDisplay.innerText = total;
+            skillPercent.innerText = percent.toFixed(2);
+
+            // Milestone celebration
+            const milestones = [10, 50, 100, 500, 1000, 5000, 10000];
+            let html = '';
+            for (let m of milestones) {
+                if (total >= m) {
+                    html += `<span class="milestone-badge">✅ ${m}h অর্জিত!</span>`;
+                } else {
+                    html += `<span class="milestone-badge">🎯 ${m}h বাকি</span>`;
+                }
+            }
+            milestoneMessages.innerHTML = html;
+
+            // Check new milestone
+            const lastMilestone = localStorage.getItem(`lastMilestone_${currentDate}`);
+            for (let m of milestones) {
+                if (total >= m && (!lastMilestone || parseInt(lastMilestone) < m)) {
+                    showConfettiMessage(`🎉 অভিনন্দন! ${m} ঘন্টা স্কিল ডেভেলপমেন্ট সম্পন্ন! 🎉`);
+                    localStorage.setItem(`lastMilestone_${currentDate}`, m);
+                }
+            }
+        }
+
+        function updateRemainingHours() {
+            let completed = 0;
+            for (let entry of hourlyData) {
+                if (entry.checked) completed++;
+            }
+            const remaining = TOTAL_HOURS - completed;
+            remainingHoursBadge.innerText = `⏰ বাকি: ${remaining} ঘন্টা`;
         }
 
         function loadFromLocalStorage(date) {
@@ -651,12 +914,8 @@
                 try {
                     prayerData = JSON.parse(saved);
                     religionSelect.value = prayerData.religion || 'muslim';
-                } catch (e) {
-                    prayerData = { religion: 'muslim', ...getDefaultPrayerData('muslim') };
-                }
-            } else {
-                prayerData = { religion: 'muslim', ...getDefaultPrayerData('muslim') };
-            }
+                } catch (e) { prayerData = { religion: 'muslim', ...getDefaultPrayerData('muslim') }; }
+            } else { prayerData = { religion: 'muslim', ...getDefaultPrayerData('muslim') }; }
             renderPrayerSection();
         }
 
@@ -664,100 +923,67 @@
             const religion = religionSelect.value;
             prayerData.religion = religion;
             let html = '<div class="prayer-grid">';
-
             if (religion === 'muslim') {
                 const prayers = [
-                    { id: 'fajr', name: '🌅 ফজর' },
-                    { id: 'zuhr', name: '☀️ যোহর' },
-                    { id: 'asr', name: '🌇 আসর' },
-                    { id: 'maghrib', name: '🌙 মাগরিব' },
-                    { id: 'isha', name: '⭐ ইশা' },
-                    { id: 'tahajjud', name: '🌜 তাহাজ্জুদ' }
+                    { id: 'fajr', name: '🌅 ফজর' }, { id: 'zuhr', name: '☀️ যোহর' },
+                    { id: 'asr', name: '🌇 আসর' }, { id: 'maghrib', name: '🌙 মাগরিব' },
+                    { id: 'isha', name: '⭐ ইশা' }, { id: 'tahajjud', name: '🌜 তাহাজ্জুদ' }
                 ];
                 prayers.forEach(p => {
                     const checked = prayerData.prayers?.[p.id] || false;
-                    html += `
-                    <div class="prayer-item">
-                        <div class="prayer-name">${p.name}</div>
-                        <div class="prayer-check">
-                            <input type="checkbox" id="prayer_${p.id}" ${checked ? 'checked' : ''}>
-                            <label>পড়েছি</label>
-                        </div>
-                    </div>
-                `;
+                    html += `<div class="prayer-item"><div class="prayer-name">${p.name}</div><div class="prayer-check"><input type="checkbox" id="prayer_${p.id}" ${checked ? 'checked' : ''}><label>পড়েছি</label></div></div>`;
                 });
-                html += `</div><div class="quran-section">
-                <input type="text" id="quranPage" class="quran-input" placeholder="📖 কুরআন পড়া (পৃষ্ঠা নম্বর)" value="${prayerData.quranPage || ''}">
-                <input type="text" id="quranJuz" class="quran-input" placeholder="📚 পারা নম্বর" value="${prayerData.quranJuz || ''}">
-            </div>`;
+                html += `</div><div class="quran-section"><input type="text" id="quranPage" class="quran-input" placeholder="📖 কুরআন পড়া (পৃষ্ঠা)" value="${prayerData.quranPage || ''}"></div>`;
+            } else {
+                html += `<div class="prayer-item"><div class="prayer-name">🧘 ধ্যান/আধ্যাত্মিক চর্চা</div><div class="prayer-check"><input type="checkbox" id="prayer_spiritual" ${prayerData.prayers?.spiritual ? 'checked' : ''}><label>করেছি</label></div></div></div>`;
             }
-            else if (religion === 'hindu') {
-                const prayers = [
-                    { id: 'puja', name: '🛕 পূজা/অর্চনা' },
-                    { id: 'mantra', name: '🔱 মন্ত্র জপ' },
-                    { id: 'temple', name: '🏛️ মন্দির দর্শন' },
-                    { id: 'meditation', name: '🧘 ধ্যান' }
-                ];
-                prayers.forEach(p => {
-                    const checked = prayerData.prayers?.[p.id] || false;
-                    html += `<div class="prayer-item"><div class="prayer-name">${p.name}</div><div class="prayer-check"><input type="checkbox" id="prayer_${p.id}" ${checked ? 'checked' : ''}><label>করেছি</label></div></div>`;
-                });
-                html += `</div><div class="quran-section"><input type="text" id="quranPage" class="quran-input" placeholder="🕉️ মন্ত্র/স্তোত্র পাঠ" value="${prayerData.quranPage || ''}"></div>`;
-            }
-            else if (religion === 'christian') {
-                const prayers = [
-                    { id: 'prayer', name: '🙏 প্রার্থনা' },
-                    { id: 'bible', name: '📖 বাইবেল পাঠ' },
-                    { id: 'church', name: '⛪ গির্জা যাওয়া' },
-                    { id: 'worship', name: '🎵 উপাসনা' }
-                ];
-                prayers.forEach(p => {
-                    const checked = prayerData.prayers?.[p.id] || false;
-                    html += `<div class="prayer-item"><div class="prayer-name">${p.name}</div><div class="prayer-check"><input type="checkbox" id="prayer_${p.id}" ${checked ? 'checked' : ''}><label>করেছি</label></div></div>`;
-                });
-                html += `</div><div class="quran-section"><input type="text" id="quranPage" class="quran-input" placeholder="📖 বাইবেল অধ্যায়/পদ" value="${prayerData.quranPage || ''}"></div>`;
-            }
-            else {
-                html += `<div class="prayer-item"><div class="prayer-name">🧘 ধ্যান/আধ্যাত্মিক চর্চা</div><div class="prayer-check"><input type="checkbox" id="prayer_spiritual" ${prayerData.prayers?.spiritual ? 'checked' : ''}><label>করেছি</label></div></div>`;
-                html += `</div><div class="quran-section"><input type="text" id="quranPage" class="quran-input" placeholder="আপনার আধ্যাত্মিক চর্চা লিখুন" value="${prayerData.quranPage || ''}"></div>`;
-            }
-
             prayerContent.innerHTML = html;
-
-            const allPrayerIds = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha', 'tahajjud', 'puja', 'mantra', 'temple', 'meditation', 'prayer', 'bible', 'church', 'worship', 'spiritual'];
-            allPrayerIds.forEach(id => {
+            const prayerIds = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha', 'tahajjud', 'spiritual'];
+            prayerIds.forEach(id => {
                 const chk = document.getElementById(`prayer_${id}`);
-                if (chk) {
-                    chk.addEventListener('change', (e) => {
-                        if (!prayerData.prayers) prayerData.prayers = {};
-                        prayerData.prayers[id] = e.target.checked;
-                        saveToLocalStorage();
-                        updateAnalyticsAndChart();
-                    });
-                }
+                if (chk) chk.addEventListener('change', (e) => { prayerData.prayers[id] = e.target.checked; saveToLocalStorage(); });
             });
-
             const quranPageInput = document.getElementById('quranPage');
-            const quranJuzInput = document.getElementById('quranJuz');
             if (quranPageInput) quranPageInput.addEventListener('input', (e) => { prayerData.quranPage = e.target.value; saveToLocalStorage(); });
-            if (quranJuzInput) quranJuzInput.addEventListener('input', (e) => { prayerData.quranJuz = e.target.value; saveToLocalStorage(); });
         }
 
         function loadGoal() {
             const savedGoal = localStorage.getItem(`goal_${currentDate}`);
             if (savedGoal) dailyGoalInput.value = savedGoal;
         }
-
         function loadJournal() {
             const savedJournal = localStorage.getItem(`journal_${currentDate}`);
             if (savedJournal) journalInput.value = savedJournal;
             updateJournalStats();
         }
-
         function updateJournalStats() {
             const length = journalInput.value.length;
             const lastSave = localStorage.getItem(`journal_lastSave_${currentDate}`) || 'কখনও না';
             journalStats.innerText = `${length} অক্ষর | শেষ সংরক্ষণ: ${lastSave}`;
+        }
+
+        function calculateStreak() {
+            let streak = 0;
+            let currentDateObj = new Date();
+            for (let i = 0; i < 365; i++) {
+                const checkDate = new Date(currentDateObj);
+                checkDate.setDate(currentDateObj.getDate() - i);
+                const dateStr = checkDate.toISOString().split('T')[0];
+                const data = localStorage.getItem(`smartTracker_${dateStr}`);
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    const hasAnyActivity = parsed.some(entry => entry.checked === true || entry.activityText?.trim());
+                    if (hasAnyActivity) streak++;
+                    else break;
+                } else break;
+            }
+            return streak;
+        }
+
+        function updateStreakDisplay() {
+            const streak = calculateStreak();
+            streakCountSpan.innerText = streak;
+            if (streak >= 7) document.getElementById('streakCard').style.background = "linear-gradient(135deg, #ff6b35, #f9a826)";
         }
 
         function setCurrentDate(dateStr) {
@@ -767,26 +993,21 @@
             loadGoal();
             loadJournal();
             loadPrayerData();
-            renderAllHours();
+            loadSkillData();
+            applyFilter();
             updateAnalyticsAndChart();
             highlightCurrentHourCard();
+            updateStreakDisplay();
+            updateRemainingHours();
         }
 
         function initDarkMode() {
             const savedMode = localStorage.getItem('darkMode');
-            if (savedMode === 'enabled') {
-                document.body.classList.add('dark-mode');
-                darkModeToggle.innerHTML = '☀️ লাইট মোড';
-            }
+            if (savedMode === 'enabled') { document.body.classList.add('dark-mode'); darkModeToggle.innerHTML = '☀️ লাইট মোড'; }
             darkModeToggle.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
-                if (document.body.classList.contains('dark-mode')) {
-                    localStorage.setItem('darkMode', 'enabled');
-                    darkModeToggle.innerHTML = '☀️ লাইট মোড';
-                } else {
-                    localStorage.setItem('darkMode', 'disabled');
-                    darkModeToggle.innerHTML = '🌙 ডার্ক মোড';
-                }
+                if (document.body.classList.contains('dark-mode')) { localStorage.setItem('darkMode', 'enabled'); darkModeToggle.innerHTML = '☀️ লাইট মোড'; }
+                else { localStorage.setItem('darkMode', 'disabled'); darkModeToggle.innerHTML = '🌙 ডার্ক মোড'; }
             });
         }
 
@@ -795,6 +1016,7 @@
                 const now = new Date();
                 liveClockSpan.innerText = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
                 highlightCurrentHourCard();
+                updateRemainingHours();
             }
             updateClock();
             setInterval(updateClock, 1000);
@@ -802,9 +1024,17 @@
 
         function highlightCurrentHourCard() {
             document.querySelectorAll('.hour-card').forEach(card => card.classList.remove('current-hour-highlight'));
-            const currentHour = getCurrentHour();
-            const targetCard = document.querySelector(`.hour-card[data-hour-index='${currentHour}']`);
+            const targetCard = document.querySelector(`.hour-card[data-hour-index='${getCurrentHour()}']`);
             if (targetCard) targetCard.classList.add('current-hour-highlight');
+        }
+
+        function applyFilter() {
+            document.querySelectorAll('.hour-card').forEach(card => {
+                const hourIndex = parseInt(card.dataset.hourIndex);
+                const data = hourlyData[hourIndex];
+                if (currentFilter === 'all' || data.category === currentFilter) card.style.display = '';
+                else card.style.display = 'none';
+            });
         }
 
         function renderAllHours() {
@@ -815,10 +1045,7 @@
                 card.className = 'hour-card';
                 card.dataset.hourIndex = i;
                 card.innerHTML = `
-                <div class="hour-header">
-                    <div class="hour-label">${formatHour(i)}</div>
-                    <div style="font-size:0.7rem">${data.checked ? '✅ সমাপ্ত' : '⏳ বাকি'}</div>
-                </div>
+                <div class="hour-header"><div class="hour-label">${formatHour(i)}</div><div style="font-size:0.7rem">${data.checked ? '✅ সমাপ্ত' : '⏳ বাকি'}</div></div>
                 <div class="activity-form">
                     <input type="text" class="activity-input" placeholder="কি করলেন?" value="${escapeHtml(data.activityText)}">
                     <select class="select-category">
@@ -828,9 +1055,7 @@
                         <option value="other" ${data.category === 'other' ? 'selected' : ''}>🔘 অন্যান্য</option>
                     </select>
                     <input type="text" class="activity-input" placeholder="বিষয়/স্কিলের নাম" value="${escapeHtml(data.topic)}">
-                    <div class="checkbox-row">
-                        <input type="checkbox" ${data.checked ? 'checked' : ''}> <label>এই ঘন্টা সম্পন্ন হয়েছে</label>
-                    </div>
+                    <div class="checkbox-row"><input type="checkbox" ${data.checked ? 'checked' : ''}> <label>এই ঘন্টা সম্পন্ন হয়েছে</label></div>
                 </div>
             `;
                 const actInput = card.querySelector('.activity-form input:first-child');
@@ -846,9 +1071,16 @@
                     hourlyData[i].checked = e.target.checked;
                     statusDiv.innerText = e.target.checked ? '✅ সমাপ্ত' : '⏳ বাকি';
                     saveToLocalStorage();
+                    if (e.target.checked && hourlyData[i].category === 'skill') {
+                        skillData.totalHours = (skillData.totalHours || 0) + 1;
+                        skillData.dailyLogs = skillData.dailyLogs || [];
+                        if (dailySkillLog.value) skillData.dailyLogs.push(dailySkillLog.value);
+                        saveToLocalStorage();
+                    }
                 });
                 hoursContainer.appendChild(card);
             }
+            applyFilter();
             highlightCurrentHourCard();
         }
 
@@ -865,27 +1097,21 @@
             let completedPrayers = [];
             if (prayerData.prayers) {
                 const prayerNames = getPrayerNames(prayerData.religion);
-                const prayerIds = Object.keys(prayerData.prayers);
-                prayerIds.forEach((id, idx) => {
-                    if (prayerData.prayers[id]) {
-                        prayerCount++;
-                        if (prayerNames[idx]) completedPrayers.push(prayerNames[idx]);
-                    }
-                });
+                Object.values(prayerData.prayers).forEach((v, idx) => { if (v) { prayerCount++; if (prayerNames[idx]) completedPrayers.push(prayerNames[idx]); } });
             }
             const remainingHours = TOTAL_HOURS - completedCount;
-            return { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, studyTopicsList: studyTopics.slice(0, 4), skillTopicsList: skillTopics.slice(0, 4) };
+            let score = (studyCount * 2) + (skillCount * 2.5) + (prayerCount * 1.5);
+            if (sleepCount >= 4 && sleepCount <= 6) score += 10;
+            else if (sleepCount > 6) score -= 5;
+            score = Math.min(100, Math.max(0, Math.round(score)));
+            return { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, productivityScore: score, studyTopicsList: studyTopics.slice(0, 4), skillTopicsList: skillTopics.slice(0, 4) };
         }
 
         function updateGoalProgress(studyHours) {
-            const goal = parseFloat(dailyGoalInput.value) || 0;
+            const goal = parseFloat(dailyGoalInput.value) || 5;
             const percent = Math.min(100, (studyHours / goal) * 100);
             goalFill.style.width = `${percent}%`;
             goalStatusText.innerText = `অগ্রগতি: ${studyHours}/${goal} ঘন্টা (${Math.round(percent)}%)`;
-            if (goal > 0 && studyHours >= goal && !localStorage.getItem(`goal_celebrated_${currentDate}`)) {
-                showConfettiMessage("🎉 অভিনন্দন! দৈনিক লক্ষ্য পূরণ করেছেন! 🎉");
-                localStorage.setItem(`goal_celebrated_${currentDate}`, 'true');
-            }
         }
 
         function updateChart(study, sleep, skill) {
@@ -898,60 +1124,46 @@
             });
         }
 
-        // আগের সংস্করণের বিস্তারিত সাজেশন ফরম্যাট (বুলেট পয়েন্টে)
         function generateDetailedSuggestions(analytics) {
-            const { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, studyTopicsList, skillTopicsList } = analytics;
+            const { studyCount, sleepCount, skillCount, completedCount, remainingHours, prayerCount, completedPrayers, studyTopicsList, skillTopicsList, productivityScore } = analytics;
             let tips = [];
 
-            // বাকি ঘন্টা - সবার উপরে
-            tips.push(`⏰ <strong>আজকে এখনও ${remainingHours} ঘন্টা বাকি আছে!</strong> এই সময়টা কাজে লাগানোর পরিকল্পনা করুন।`);
+            tips.push(`⏰ <strong>আজকে এখনও ${remainingHours} ঘন্টা বাকি আছে!</strong>`);
+            tips.push(`📈 <strong>আজকের প্রোডাক্টিভিটি স্কোর: ${productivityScore}/100</strong>`);
 
-            // ঘুম সম্পর্কিত সাজেশন
-            if (sleepCount < 6) tips.push(`😴 আপনি মাত্র ${sleepCount} ঘন্টা ঘুমিয়েছেন। প্রাপ্তবয়স্কদের জন্য ৭-৮ ঘন্টা ঘুম জরুরি। আজ রাতে তাড়াতাড়ি ঘুমানোর চেষ্টা করুন।`);
-            else if (sleepCount >= 7) tips.push(`😊 ভালো ঘুম (${sleepCount} ঘন্টা) পেয়েছেন। এটি মানসিক স্বাস্থ্যের জন্য ইতিবাচক।`);
-            else if (sleepCount >= 6 && sleepCount < 7) tips.push(`😐 ঘুম ${sleepCount} ঘন্টা, আরও ১ ঘন্টা ঘুমালে ভালো থাকবেন।`);
+            // Sleep suggestions (student: 4-6 hours ideal)
+            if (sleepCount < 4) tips.push(`😴 আপনি মাত্র ${sleepCount} ঘন্টা ঘুমিয়েছেন। একজন শিক্ষার্থীর জন্য ৪-৬ ঘন্টা ঘুম যথেষ্ট। আরাম করুন।`);
+            else if (sleepCount >= 4 && sleepCount <= 6) tips.push(`😊 ভালো ঘুম (${sleepCount} ঘন্টা) পেয়েছেন। এটি আপনার পড়ালেখার জন্য যথেষ্ট।`);
+            else if (sleepCount > 6) tips.push(`😴 আপনি ${sleepCount} ঘন্টা ঘুমিয়েছেন! শিক্ষার্থীর জন্য এটা অনেক বেশি। সময় নষ্ট হচ্ছে, এখন পড়তে বসুন!`);
 
-            // পড়া সম্পর্কিত সাজেশন
-            if (studyCount < 2) tips.push(`📖 পড়ার সময় মাত্র ${studyCount} ঘন্টা। প্রতিদিন কমপক্ষে ২-৩ ঘন্টা পড়ার লক্ষ্য নিন।`);
-            else if (studyCount >= 3 && studyCount < 5) tips.push(`🎯 ভালো! আপনি ${studyCount} ঘন্টা পড়েছেন, ধারাবাহিকতা বজায় রাখুন।`);
-            else if (studyCount >= 5) tips.push(`🏆 অসাধারণ! ${studyCount} ঘন্টা পড়া সত্যিই প্রশংসনীয়।`);
+            // Study suggestions - 5 hours daily target
+            if (studyCount < 5) tips.push(`📖 পড়ার সময় মাত্র ${studyCount} ঘন্টা। প্রতিদিন ৫ ঘন্টা পড়া আবশ্যক! এখনই পড়তে বসুন, নিজের দায়িত্ব পালন করুন, দায়িত্বের সাথে আপস করবেন না।`);
+            else if (studyCount >= 5) tips.push(`🏆 অসাধারণ! আপনি ${studyCount} ঘন্টা পড়েছেন। প্রতিটি ঘন্টার জন্য আপনাকে সেরা অভিনন্দন! ধারাবাহিক থাকুন।`);
 
-            // স্কিল ডেভেলপমেন্ট
-            if (skillCount < 1) tips.push(`⚙️ আজ স্কিল ডেভেলপমেন্টে সময় দেননি। ১ ঘন্টা নতুন কিছু শিখুন (কোডিং, ভাষা, ডিজাইন) ভবিষ্যতের জন্য বড় সুবিধা।`);
-            else if (skillCount >= 1 && skillCount < 2) tips.push(`💪 স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন, ভালো। আরও বাড়ান।`);
-            else if (skillCount >= 2) tips.push(`🔥 চমৎকার! স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন। এটাই সাফল্যের চাবি!`);
+            // Skill development - 4 hours daily target
+            if (skillCount < 4) tips.push(`⚙️ স্কিল ডেভেলপমেন্টে মাত্র ${skillCount} ঘন্টা। প্রতিদিন ৪ ঘন্টা স্কিল ডেভেলপ করুন। ১০০০০ ঘন্টার গোলের দিকে এগিয়ে যান!`);
+            else if (skillCount >= 4) tips.push(`🔥 অসাধারণ! স্কিল ডেভেলপমেন্টে ${skillCount} ঘন্টা দিয়েছেন। আপনি সঠিক পথে আছেন, ১০০০০ ঘন্টার গোল পূরণ হবে ইনশাআল্লাহ!`);
 
-            // ইবাদত সম্পর্কিত সাজেশন (নতুন)
-            if (prayerCount === 0) tips.push(`🕌 আজকে ইবাদত ট্র্যাক করেননি। আপনার ধর্মীয় চর্চার জন্য কিছু সময় বের করুন।`);
-            else if (prayerCount > 0 && prayerCount < 3) tips.push(`🕌 ইবাদত ${prayerCount} বার করেছেন। নিয়মিত করার চেষ্টা করুন।`);
-            else if (prayerCount >= 5) tips.push(`🌟 চমৎকার! ইবাদতে ধারাবাহিকতা বজায় রাখুন। এটি মানসিক প্রশান্তি আনে।`);
-
-            // টপিক ভিত্তিক সাজেশন
-            if (studyTopicsList.length > 0) tips.push(`📚 আপনি পড়েছেন: ${studyTopicsList.join(', ')}। এই বিষয়গুলো নিয়মিত পড়তে থাকুন।`);
-            if (skillTopicsList.length > 0) tips.push(`🎓 স্কিল ডেভেলপ করছেন: ${skillTopicsList.join(', ')}। এই স্কিলগুলো ভবিষ্যতে কাজে দেবে।`);
-
-            // সময় ব্যবস্থাপনা
-            if (remainingHours > 12) {
-                tips.push(`📋 এখনও অনেক সময় বাকি! আগামী ঘন্টাগুলোর জন্য পড়া এবং স্কিল ডেভেলপমেন্টে ফোকাস করুন।`);
-            } else if (remainingHours > 6 && remainingHours <= 12) {
-                tips.push(`📋 বাকি ${remainingHours} ঘন্টা। এই সময়ে পড়া এবং স্কিল ডেভেলপমেন্টে ফোকাস করুন।`);
-            } else if (remainingHours <= 6 && remainingHours > 0) {
-                tips.push(`📋 বাকি মাত্র ${remainingHours} ঘন্টা। এই সময়টুকু ভালোভাবে কাজে লাগান।`);
+            // Prayer suggestions for muslim
+            if (prayerData.religion === 'muslim') {
+                const requiredPrayers = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
+                let missed = requiredPrayers.filter(p => !prayerData.prayers[p]).length;
+                if (missed > 0) tips.push(`🕌 আপনি ${5 - missed} ওয়াক্ত নামাজ পড়েছেন, ${missed} ওয়াক্ত বাকি। নামাজ ছাড়বেন না, এটা আপনার সাফল্যের চাবি। কুরআন তিলাওয়াত করুন, এক আয়াত হলেও।`);
+                else if (missed === 0) tips.push(`🕌 চমৎকার! সব ৫ ওয়াক্ত নামাজ পড়েছেন। কুরআন তিলাওয়াত চালিয়ে যান। আল্লাহ আপনার মেধা বৃদ্ধি করুন।`);
+                if (prayerData.quranPage) tips.push(`📖 কুরআন তিলাওয়াত করেছেন - পৃষ্ঠা ${prayerData.quranPage}. চালিয়ে যান!`);
             }
 
-            // মোটিভেশনাল
-            if (completedCount === 24) {
-                tips.push(`🎉 অসাধারণ! সম্পূর্ণ দিন ট্র্যাক করেছেন। প্রতিদিন এই ধারাবাহিকতা আনুন।`);
-            }
+            if (completedPrayers.length > 0) tips.push(`🕌 সম্পন্ন ইবাদত: ${completedPrayers.join(', ')}`);
+            if (studyTopicsList.length > 0) tips.push(`📚 পড়া বিষয়: ${studyTopicsList.join(', ')}`);
+            if (skillTopicsList.length > 0) tips.push(`🎓 স্কিল টপিক: ${skillTopicsList.join(', ')}`);
 
-            const productiveTotal = studyCount + skillCount;
-            if (productiveTotal === 0 && completedCount > 0) {
-                tips.push(`🌟 পরামর্শ: আজকে উৎপাদনশীল কাজ কম হয়েছে। আগামীকাল ছোট ছোট লক্ষ্য নিয়ে শুরু করুন।`);
-            } else if (productiveTotal > 0 && productiveTotal < 4) {
-                tips.push(`🌟 পরামর্শ: উৎপাদনশীল সময় বাড়ান। ছোট ছোট লক্ষ্য নিন।`);
-            } else if (productiveTotal >= 8) {
-                tips.push(`🏅 গুরুত্বপূর্ণ: আপনি আজ খুবই উৎপাদনশীল ছিলেন! এই ধারা বজায় রাখুন।`);
-            }
+            const streak = calculateStreak();
+            if (streak >= 7) tips.push(`🔥 আপনি ${streak} দিন ধরে একটানা ট্র্যাক করছেন! অসাধারণ ধারাবাহিকতা!`);
+
+            // 10000 hours motivation
+            const skillProgress = skillData.totalHours || 0;
+            const remainingSkill = 10000 - skillProgress;
+            tips.push(`🎯 ১০০০০ ঘন্টা স্কিল গোল: অর্জিত ${skillProgress} ঘন্টা, বাকি ${remainingSkill} ঘন্টা। প্রতিদিন ৪ ঘন্টা করলে ${Math.ceil(remainingSkill / 4)} দিনে গোল পূরণ হবে!`);
 
             return tips.map(tip => `• ${tip}`).join('<br>');
         }
@@ -963,12 +1175,35 @@
             skillHoursSpan.innerText = analytics.skillCount;
             completedHoursSpan.innerText = analytics.completedCount;
             prayerCountSpan.innerText = analytics.prayerCount;
-            prayerDetailsSpan.innerHTML = analytics.completedPrayers.length ? analytics.completedPrayers.slice(0, 3).join(', ') + (analytics.completedPrayers.length > 3 ? '...' : '') : '-';
+            productivityScoreSpan.innerText = analytics.productivityScore;
+            prayerDetailsSpan.innerHTML = analytics.completedPrayers.length ? analytics.completedPrayers.slice(0, 3).join(', ') : '-';
             studyTopicsListDiv.innerHTML = analytics.studyTopicsList.length ? analytics.studyTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('') : '-';
             skillTopicsListDiv.innerHTML = analytics.skillTopicsList.length ? analytics.skillTopicsList.map(t => `<span class="topic-badge">${escapeHtml(t)}</span>`).join('') : '-';
             updateChart(analytics.studyCount, analytics.sleepCount, analytics.skillCount);
             updateGoalProgress(analytics.studyCount);
             suggestionText.innerHTML = generateDetailedSuggestions(analytics);
+            updateRemainingHours();
+        }
+
+        function showWeeklyReport() {
+            let weeklyData = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(); date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const data = localStorage.getItem(`smartTracker_${dateStr}`);
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    let study = 0, skill = 0;
+                    parsed.forEach(entry => { if (entry.category === 'study') study++; else if (entry.category === 'skill') skill++; });
+                    weeklyData.push({ date: dateStr, study, skill });
+                } else { weeklyData.push({ date: dateStr, study: 0, skill: 0 }); }
+            }
+            let html = '<table style="width:100%; border-collapse:collapse;">';
+            html += '<tr><th>তারিখ</th><th>📖 পড়া</th><th>⚙️ স্কিল</th></tr>';
+            weeklyData.forEach(day => { html += `<tr><td style="padding:8px;">${day.date}</td><td style="text-align:center;">${day.study}h</td><td style="text-align:center;">${day.skill}h</td></tr>`; });
+            html += '</table>';
+            document.getElementById('weeklyReportContent').innerHTML = html;
+            weeklyModal.style.display = 'flex';
         }
 
         function exportToCSV() {
@@ -978,66 +1213,46 @@
                 csvRows.push([`${i}:00-${i + 1}:00`, d.category, d.activityText, d.topic, d.checked ? "হ্যাঁ" : "না"]);
             }
             const blob = new Blob([csvRows.map(row => row.join(",")).join("\n")], { type: "text/csv" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `tracker_${currentDate}.csv`;
-            link.click();
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `tracker_${currentDate}.csv`; link.click();
             showConfettiMessage("📥 CSV ডাউনলোড শুরু!");
         }
 
-        function showConfettiMessage(msg) {
-            const div = document.createElement('div');
-            div.className = 'confetti-message';
-            div.innerText = msg;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 3000);
-        }
-
+        function showConfettiMessage(msg) { const div = document.createElement('div'); div.className = 'confetti-message'; div.innerText = msg; document.body.appendChild(div); setTimeout(() => div.remove(), 3000); }
         function resetCurrentDate() {
-            if (confirm(`"${currentDate}" তারিখের সব রেকর্ড রিসেট করবেন?`)) {
+            if (confirm(`"${currentDate}" রিসেট করবেন?`)) {
                 hourlyData = createEmptyDataset();
                 prayerData = { religion: religionSelect.value, ...getDefaultPrayerData(religionSelect.value) };
                 journalInput.value = '';
-                saveToLocalStorage();
-                renderAllHours();
-                renderPrayerSection();
-                updateAnalyticsAndChart();
-                showConfettiMessage("🗑️ ডাটা রিসেট হয়েছে");
+                saveToLocalStorage(); renderAllHours(); renderPrayerSection(); updateAnalyticsAndChart(); updateStreakDisplay();
+                showConfettiMessage("🗑️ রিসেট হয়েছে");
             }
         }
-
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 
-        journalInput.addEventListener('input', () => {
-            const now = new Date().toLocaleTimeString();
-            localStorage.setItem(`journal_${currentDate}`, journalInput.value);
-            localStorage.setItem(`journal_lastSave_${currentDate}`, now);
-            updateJournalStats();
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active'); currentFilter = btn.dataset.filter; applyFilter();
+            });
         });
 
-        religionSelect.addEventListener('change', () => {
-            prayerData = { religion: religionSelect.value, ...getDefaultPrayerData(religionSelect.value) };
-            renderPrayerSection();
-            saveToLocalStorage();
-        });
-
+        journalInput.addEventListener('input', () => { const now = new Date().toLocaleTimeString(); localStorage.setItem(`journal_${currentDate}`, journalInput.value); localStorage.setItem(`journal_lastSave_${currentDate}`, now); updateJournalStats(); });
+        religionSelect.addEventListener('change', () => { prayerData = { religion: religionSelect.value, ...getDefaultPrayerData(religionSelect.value) }; renderPrayerSection(); saveToLocalStorage(); });
+        skillTopicName.addEventListener('change', () => { skillData.topic = skillTopicName.value; saveToLocalStorage(); });
+        dailySkillLog.addEventListener('change', () => { if (dailySkillLog.value) { skillData.dailyLogs = skillData.dailyLogs || []; skillData.dailyLogs.push(dailySkillLog.value); saveToLocalStorage(); } });
         datePicker.addEventListener('change', (e) => setCurrentDate(e.target.value));
         todayBtn.addEventListener('click', () => setCurrentDate(getTodayString()));
         resetDateBtn.addEventListener('click', resetCurrentDate);
         exportCsvBtn.addEventListener('click', exportToCSV);
+        weeklyReportBtn.addEventListener('click', showWeeklyReport);
         dailyGoalInput.addEventListener('change', () => { saveToLocalStorage(); updateAnalyticsAndChart(); });
+        document.querySelector('.close-modal')?.addEventListener('click', () => weeklyModal.style.display = 'none');
+        window.addEventListener('click', (e) => { if (e.target === weeklyModal) weeklyModal.style.display = 'none'; });
 
         function init() {
-            currentDate = getTodayString();
-            datePicker.value = currentDate;
-            hourlyData = loadFromLocalStorage(currentDate);
-            loadGoal();
-            loadJournal();
-            loadPrayerData();
-            renderAllHours();
-            updateAnalyticsAndChart();
-            startRealTimeClock();
-            initDarkMode();
+            currentDate = getTodayString(); datePicker.value = currentDate;
+            hourlyData = loadFromLocalStorage(currentDate); loadGoal(); loadJournal(); loadPrayerData(); loadSkillData();
+            renderAllHours(); updateAnalyticsAndChart(); startRealTimeClock(); initDarkMode(); updateStreakDisplay(); updateRemainingHours();
         }
         init();
     </script>
